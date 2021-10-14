@@ -1,0 +1,81 @@
+syntax = "proto3";
+package engine_api;
+// NOTE: It sucks that we have this Go-specific logic inside this file (which should be language-agnostic). However, the Protobuf team have
+// taken a hard stance on this being the way it should be done, so we have to do it this way.
+option go_package = "github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings";
+
+import "google/protobuf/empty.proto";
+
+service EngineService {
+  // Creates a new Kurtosis Enclave
+  rpc CreateEnclave(CreateEnclaveArgs) returns (CreateEnclaveResponse) {};
+  // Get a running Kurtosis Enclave
+  rpc GetEnclave(GetEnclaveArgs) returns (GetEnclaveResponse) {};
+  // Destroy a running Kurtosis Enclave
+  rpc DestroyEnclave(DestroyEnclaveArgs) returns (google.protobuf.Empty) {};
+}
+
+// ==============================================================================================
+//                                        Create Enclave
+// ==============================================================================================
+message CreateEnclaveArgs {
+  //The ID of the new Kurtosis Enclave
+  string enclave_id = 1;
+  //The API container Docker image name which will be used to start the API container inside the Kurtosis Enclave
+  string api_container_image = 2;
+  //Whether network partitioning will be enabled or not on the new Kurtosis Enclave
+  bool is_partitioning_enabled = 3;
+  //If it is true, returns the ports on the host container interface where each of the container's exposed ports can be found; if it is false, this will be an empty map
+  bool should_publish_all_ports = 4;
+}
+
+message CreateEnclaveResponse {
+  //The Docker network id that is part of the Kurtosis Enclave
+  string network_id = 1;
+  //The Docker network IP
+  string network_ip = 2;
+  //The API container ID that is currently running in the Kurtosis Enclave
+  string api_container_id = 3;
+  //The API container IP address
+  string api_container_ip = 4;
+  //THE API container Host IP address
+  string api_container_host_ip = 5;
+  //THE API container Host port number
+  string api_container_host_port = 6;
+}
+
+// ==============================================================================================
+//                                          Get Enclave
+// ==============================================================================================
+message GetEnclaveArgs {
+  //The ID of the new Kurtosis Enclave
+  string enclave_id = 1;
+}
+
+message GetEnclaveResponse {
+  //The Docker network id that is part of the Kurtosis Enclave
+  string network_id = 1;
+  //The Docker network IP
+  string network_ip = 2;
+  //The API container ID that is currently running in the Kurtosis Enclave
+  string api_container_id = 3;
+  //The API container IP address
+  string api_container_ip = 4;
+  //THE API container Host IP address
+  string api_container_host_ip = 5;
+  //THE API container Host port number
+  string api_container_host_port = 6;
+}
+
+
+// ==============================================================================================
+//                                       Destroy Enclave
+// ==============================================================================================
+message DestroyEnclaveArgs {
+  //The ID of the new Kurtosis Enclave
+  string enclave_id = 1;
+  //The Docker network id that is part of the Kurtosis Enclave
+  string network_id = 2;
+  //The API container ID that is currently running in the Kurtosis Enclave
+  string api_container_id = 3;
+}
