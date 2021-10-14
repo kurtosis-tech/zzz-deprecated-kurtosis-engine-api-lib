@@ -25,7 +25,7 @@ message CreateEnclaveArgs {
   string api_container_image = 2;
   //Whether network partitioning will be enabled or not on the new Kurtosis Enclave
   bool is_partitioning_enabled = 3;
-  //If it is true, returns the ports on the host container interface where each of the container's exposed ports can be found; if it is false, this will be an empty map
+  //If true, when a container is started in the enclave then all its used ports will also be made available on the host machine
   bool should_publish_all_ports = 4;
 }
 
@@ -36,11 +36,11 @@ message CreateEnclaveResponse {
   string network_ip = 2;
   //The API container ID that is currently running in the Kurtosis Enclave
   string api_container_id = 3;
-  //The API container IP address
-  string api_container_ip = 4;
-  //THE API container Host IP address
+  //The IP of the interface on the host machine where the API container's port can be accessed
+  string api_container_ip_inside_network = 4;
+  //The API container Host IP address
   string api_container_host_ip = 5;
-  //THE API container Host port number
+  //The port number on the host machine where the API container can be reached
   string api_container_host_port = 6;
 }
 
@@ -48,7 +48,7 @@ message CreateEnclaveResponse {
 //                                          Get Enclave
 // ==============================================================================================
 message GetEnclaveArgs {
-  //The ID of the new Kurtosis Enclave
+  //The ID of the enclave to retrieve
   string enclave_id = 1;
 }
 
@@ -59,11 +59,11 @@ message GetEnclaveResponse {
   string network_ip = 2;
   //The API container ID that is currently running in the Kurtosis Enclave
   string api_container_id = 3;
-  //The API container IP address
-  string api_container_ip = 4;
-  //THE API container Host IP address
+  //The IP of the interface on the host machine where the API container's port can be accessed
+  string api_container_ip_inside_network = 4;
+  //The API container Host IP address
   string api_container_host_ip = 5;
-  //THE API container Host port number
+  //The port number on the host machine where the API container can be reached
   string api_container_host_port = 6;
 }
 
@@ -74,8 +74,4 @@ message GetEnclaveResponse {
 message DestroyEnclaveArgs {
   //The ID of the new Kurtosis Enclave
   string enclave_id = 1;
-  //The Docker network id that is part of the Kurtosis Enclave
-  string network_id = 2;
-  //The API container ID that is currently running in the Kurtosis Enclave
-  string api_container_id = 3;
 }

@@ -8,16 +8,16 @@ root_dirpath="$(dirname "${script_dirpath}")"
 
 # ================================ CONSTANTS =======================================================
 GENERATOR_SCRIPT_FILENAME="generate-protobuf-bindings.sh"  # Must be on the PATH
-ENGINE_DIRNAME="kurtosis-engine-rpc-api"
-ENGINE_BINDINGS_DIRNAME="kurtosis_engine_rpc_api_bindings"
+PROTOBUF_DIRNAME="kurtosis-engine-rpc-api"
+PROTOBUF_BINDINGS_DIRNAME="kurtosis_engine_rpc_api_bindings"
 GOLANG_DIRNAME="golang"
 TYPESCRIPT_DIRNAME="typescript"
 
 # =============================== MAIN LOGIC =======================================================
-input_dirpath="${root_dirpath}/${ENGINE_DIRNAME}"
+input_dirpath="${root_dirpath}/${PROTOBUF_DIRNAME}"
 
 # Golang
-go_output_dirpath="${root_dirpath}/${GOLANG_DIRNAME}/${ENGINE_BINDINGS_DIRNAME}"
+go_output_dirpath="${root_dirpath}/${GOLANG_DIRNAME}/${PROTOBUF_BINDINGS_DIRNAME}"
 if ! GO_MOD_FILEPATH="${root_dirpath}/${GOLANG_DIRNAME}/go.mod" "${GENERATOR_SCRIPT_FILENAME}" "${input_dirpath}" "${go_output_dirpath}" golang; then
     echo "Error: An error occurred generating Go bindings in directory '${go_output_dirpath}'" >&2
     exit 1
@@ -25,7 +25,7 @@ fi
 echo "Successfully generated Go bindings in directory '${go_output_dirpath}'"
 
 # TypeScript
-typescript_output_dirpath="${root_dirpath}/${TYPESCRIPT_DIRNAME}/src/${ENGINE_BINDINGS_DIRNAME}"
+typescript_output_dirpath="${root_dirpath}/${TYPESCRIPT_DIRNAME}/src/${PROTOBUF_BINDINGS_DIRNAME}"
 if ! "${GENERATOR_SCRIPT_FILENAME}" "${input_dirpath}" "${typescript_output_dirpath}" typescript; then
     echo "Error: An error occurred generating TypeScript bindings in directory '${typescript_output_dirpath}'" >&2
     exit 1

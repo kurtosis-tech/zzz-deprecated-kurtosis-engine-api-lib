@@ -19,7 +19,7 @@
         "kurtosis",
         "engine"
     ],
-    "author": "Kurtosis Technologies Inc <accounts@kurtosistech.com> (https://www.kurtosistech.com/)",
+    "author": "Kurtosis Technologies Inc <support@kurtosistech.com> (https://www.kurtosistech.com/)",
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/kurtosis-tech/kurtosis-engine-api-lib/issues"
