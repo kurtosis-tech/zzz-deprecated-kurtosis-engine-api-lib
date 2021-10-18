@@ -1,4 +1,6 @@
 # TBD
+
+# 0.3.1
 ### Features
 * Added `kurtosis_engine_server_rpc_api_consts` Typescript version
 
