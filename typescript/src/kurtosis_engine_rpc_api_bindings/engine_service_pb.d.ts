@@ -104,8 +104,8 @@ export class GetEnclaveResponse extends jspb.Message {
   getNetworkId(): string;
   setNetworkId(value: string): void;
 
-  getNetworkIp(): string;
-  setNetworkIp(value: string): void;
+  getNetworkCidr(): string;
+  setNetworkCidr(value: string): void;
 
   getApiContainerId(): string;
   setApiContainerId(value: string): void;
@@ -132,11 +132,31 @@ export class GetEnclaveResponse extends jspb.Message {
 export namespace GetEnclaveResponse {
   export type AsObject = {
     networkId: string,
-    networkIp: string,
+    networkCidr: string,
     apiContainerId: string,
     apiContainerIpInsideNetwork: string,
     apiContainerHostIp: string,
     apiContainerHostPort: string,
+  }
+}
+
+export class StopEnclaveArgs extends jspb.Message {
+  getEnclaveId(): string;
+  setEnclaveId(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StopEnclaveArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: StopEnclaveArgs): StopEnclaveArgs.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StopEnclaveArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopEnclaveArgs;
+  static deserializeBinaryFromReader(message: StopEnclaveArgs, reader: jspb.BinaryReader): StopEnclaveArgs;
+}
+
+export namespace StopEnclaveArgs {
+  export type AsObject = {
+    enclaveId: string,
   }
 }
 

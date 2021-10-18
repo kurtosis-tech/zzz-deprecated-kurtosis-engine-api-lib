@@ -60,6 +60,17 @@ function deserialize_engine_api_GetEnclaveResponse(buffer_arg) {
   return engine_service_pb.GetEnclaveResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_engine_api_StopEnclaveArgs(arg) {
+  if (!(arg instanceof engine_service_pb.StopEnclaveArgs)) {
+    throw new Error('Expected argument of type engine_api.StopEnclaveArgs');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_engine_api_StopEnclaveArgs(buffer_arg) {
+  return engine_service_pb.StopEnclaveArgs.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_google_protobuf_Empty(arg) {
   if (!(arg instanceof google_protobuf_empty_pb.Empty)) {
     throw new Error('Expected argument of type google.protobuf.Empty');
@@ -97,7 +108,19 @@ getEnclave: {
     responseSerialize: serialize_engine_api_GetEnclaveResponse,
     responseDeserialize: deserialize_engine_api_GetEnclaveResponse,
   },
-  // Destroy a running Kurtosis Enclave
+  // Stops all containers in an enclave
+stopEnclave: {
+    path: '/engine_api.EngineService/StopEnclave',
+    requestStream: false,
+    responseStream: false,
+    requestType: engine_service_pb.StopEnclaveArgs,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_engine_api_StopEnclaveArgs,
+    requestDeserialize: deserialize_engine_api_StopEnclaveArgs,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
+  },
+  // Destroys an enclave, removing all artifacts associated with it
 destroyEnclave: {
     path: '/engine_api.EngineService/DestroyEnclave',
     requestStream: false,

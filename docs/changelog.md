@@ -1,7 +1,8 @@
 # TBD
+### Features
+* Added a `StopEnclave` endpoint, for stopping the containers in an enclave
 
 # 0.3.0
-
 ### Breaking changes
 * Renamed `network_ip` field in `GetEnclaveResponse` protobuf message to `network_cidr` because the value will contain IP address and Mask
   * Users should use the new field `network_cidr` instead the old `network_ip` and parse it to get the network ip address and mask
