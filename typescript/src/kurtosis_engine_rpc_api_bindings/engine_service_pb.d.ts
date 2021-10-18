@@ -104,8 +104,8 @@ export class GetEnclaveResponse extends jspb.Message {
   getNetworkId(): string;
   setNetworkId(value: string): void;
 
-  getNetworkIp(): string;
-  setNetworkIp(value: string): void;
+  getNetworkCidr(): string;
+  setNetworkCidr(value: string): void;
 
   getApiContainerId(): string;
   setApiContainerId(value: string): void;
@@ -132,7 +132,7 @@ export class GetEnclaveResponse extends jspb.Message {
 export namespace GetEnclaveResponse {
   export type AsObject = {
     networkId: string,
-    networkIp: string,
+    networkCidr: string,
     apiContainerId: string,
     apiContainerIpInsideNetwork: string,
     apiContainerHostIp: string,
