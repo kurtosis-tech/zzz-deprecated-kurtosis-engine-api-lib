@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,6 +21,10 @@ const _ = grpc.SupportPackageIsVersion7
 type EngineServiceClient interface {
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(ctx context.Context, in *CreateEnclaveArgs, opts ...grpc.CallOption) (*CreateEnclaveResponse, error)
+	// Get a running Kurtosis Enclave
+	GetEnclave(ctx context.Context, in *GetEnclaveArgs, opts ...grpc.CallOption) (*GetEnclaveResponse, error)
+	// Destroy a running Kurtosis Enclave
+	DestroyEnclave(ctx context.Context, in *DestroyEnclaveArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type engineServiceClient struct {
@@ -39,12 +44,34 @@ func (c *engineServiceClient) CreateEnclave(ctx context.Context, in *CreateEncla
 	return out, nil
 }
 
+func (c *engineServiceClient) GetEnclave(ctx context.Context, in *GetEnclaveArgs, opts ...grpc.CallOption) (*GetEnclaveResponse, error) {
+	out := new(GetEnclaveResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetEnclave", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) DestroyEnclave(ctx context.Context, in *DestroyEnclaveArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/DestroyEnclave", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EngineServiceServer is the server API for EngineService service.
 // All implementations must embed UnimplementedEngineServiceServer
 // for forward compatibility
 type EngineServiceServer interface {
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error)
+	// Get a running Kurtosis Enclave
+	GetEnclave(context.Context, *GetEnclaveArgs) (*GetEnclaveResponse, error)
+	// Destroy a running Kurtosis Enclave
+	DestroyEnclave(context.Context, *DestroyEnclaveArgs) (*emptypb.Empty, error)
 	mustEmbedUnimplementedEngineServiceServer()
 }
 
@@ -54,6 +81,12 @@ type UnimplementedEngineServiceServer struct {
 
 func (UnimplementedEngineServiceServer) CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnclave not implemented")
+}
+func (UnimplementedEngineServiceServer) GetEnclave(context.Context, *GetEnclaveArgs) (*GetEnclaveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnclave not implemented")
+}
+func (UnimplementedEngineServiceServer) DestroyEnclave(context.Context, *DestroyEnclaveArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DestroyEnclave not implemented")
 }
 func (UnimplementedEngineServiceServer) mustEmbedUnimplementedEngineServiceServer() {}
 
@@ -86,6 +119,42 @@ func _EngineService_CreateEnclave_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EngineService_GetEnclave_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnclaveArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetEnclave(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetEnclave",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetEnclave(ctx, req.(*GetEnclaveArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_DestroyEnclave_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DestroyEnclaveArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).DestroyEnclave(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/DestroyEnclave",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).DestroyEnclave(ctx, req.(*DestroyEnclaveArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EngineService_ServiceDesc is the grpc.ServiceDesc for EngineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +165,14 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateEnclave",
 			Handler:    _EngineService_CreateEnclave_Handler,
+		},
+		{
+			MethodName: "GetEnclave",
+			Handler:    _EngineService_GetEnclave_Handler,
+		},
+		{
+			MethodName: "DestroyEnclave",
+			Handler:    _EngineService_DestroyEnclave_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
