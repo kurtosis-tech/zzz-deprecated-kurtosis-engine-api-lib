@@ -1,5 +1,11 @@
 # TBD
 
+# 0.3.0
+
+### Breaking changes
+* Renamed `network_ip` field in `GetEnclaveResponse` protobuf message to `network_cidr` because the value will contain IP address and Mask
+  * Users should use the new field `network_cidr` instead the old `network_ip` and parse it to get the network ip address and mask
+
 # 0.2.0
 ### Features
 * Added `kurtosis_engine_server_rpc_api_consts` which contains constants related to the Kurtosis Engine Server (e.g. ListenProtocol)
