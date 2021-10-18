@@ -1,7 +1,13 @@
 # TBD
 
-# 0.3.0
+# 0.3.1
+### Features
+* Added `kurtosis_engine_server_rpc_api_consts` Typescript version
 
+### Fixes
+* Regenerated protobuf bindings file with latest RPC API messages
+
+# 0.3.0
 ### Breaking changes
 * Renamed `network_ip` field in `GetEnclaveResponse` protobuf message to `network_cidr` because the value will contain IP address and Mask
   * Users should use the new field `network_cidr` instead the old `network_ip` and parse it to get the network ip address and mask
