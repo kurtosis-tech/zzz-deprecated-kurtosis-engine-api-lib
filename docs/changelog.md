@@ -1,6 +1,6 @@
 # TBD
 ### Features
-* Added `engine_server_consts` which contains constants related to the Kurtosis Engine Server (e.g. ListenProtocol)
+* Added `kurtosis_engine_server_rpc_api_consts` which contains constants related to the Kurtosis Engine Server (e.g. ListenProtocol)
 * Added `api_container_log_level` argument in `CreateEnclaveArgs` to specified the log level that the API container running in the enclave should have
 
 ### Breaking changes
