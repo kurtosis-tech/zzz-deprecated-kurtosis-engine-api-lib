@@ -1,5 +1,9 @@
 # TBD
 
+# 0.3.2
+### Change
+* Renamed `engine_server_consts` Golang and Typescript constants files to `kurtosis_engine_rpc_api_consts`
+
 # 0.3.1
 ### Features
 * Added `kurtosis_engine_server_rpc_api_consts` Typescript version
