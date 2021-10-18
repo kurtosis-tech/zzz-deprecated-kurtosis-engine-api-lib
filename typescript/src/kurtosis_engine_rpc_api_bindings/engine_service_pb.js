@@ -820,7 +820,7 @@ proto.engine_api.GetEnclaveResponse.prototype.toObject = function(opt_includeIns
 proto.engine_api.GetEnclaveResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     networkId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    networkIp: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    networkCidr: jspb.Message.getFieldWithDefault(msg, 2, ""),
     apiContainerId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     apiContainerIpInsideNetwork: jspb.Message.getFieldWithDefault(msg, 4, ""),
     apiContainerHostIp: jspb.Message.getFieldWithDefault(msg, 5, ""),
@@ -867,7 +867,7 @@ proto.engine_api.GetEnclaveResponse.deserializeBinaryFromReader = function(msg, 
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setNetworkIp(value);
+      msg.setNetworkCidr(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -921,7 +921,7 @@ proto.engine_api.GetEnclaveResponse.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getNetworkIp();
+  f = message.getNetworkCidr();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -978,10 +978,10 @@ proto.engine_api.GetEnclaveResponse.prototype.setNetworkId = function(value) {
 
 
 /**
- * optional string network_ip = 2;
+ * optional string network_cidr = 2;
  * @return {string}
  */
-proto.engine_api.GetEnclaveResponse.prototype.getNetworkIp = function() {
+proto.engine_api.GetEnclaveResponse.prototype.getNetworkCidr = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -990,7 +990,7 @@ proto.engine_api.GetEnclaveResponse.prototype.getNetworkIp = function() {
  * @param {string} value
  * @return {!proto.engine_api.GetEnclaveResponse} returns this
  */
-proto.engine_api.GetEnclaveResponse.prototype.setNetworkIp = function(value) {
+proto.engine_api.GetEnclaveResponse.prototype.setNetworkCidr = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
