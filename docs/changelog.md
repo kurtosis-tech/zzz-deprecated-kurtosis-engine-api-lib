@@ -1,4 +1,6 @@
 # TBD
+
+# 0.3.3
 ### Features
 * Added a `StopEnclave` endpoint, for stopping the containers in an enclave
 
