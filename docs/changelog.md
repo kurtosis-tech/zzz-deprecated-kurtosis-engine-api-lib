@@ -1,5 +1,9 @@
 # TBD
 
+# 0.3.3
+### Features
+* Added a `StopEnclave` endpoint, for stopping the containers in an enclave
+
 # 0.3.2
 ### Change
 * Renamed `engine_server_consts` Golang and Typescript constants files to `kurtosis_engine_rpc_api_consts`

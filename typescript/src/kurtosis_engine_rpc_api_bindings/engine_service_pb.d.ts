@@ -140,6 +140,26 @@ export namespace GetEnclaveResponse {
   }
 }
 
+export class StopEnclaveArgs extends jspb.Message {
+  getEnclaveId(): string;
+  setEnclaveId(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StopEnclaveArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: StopEnclaveArgs): StopEnclaveArgs.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StopEnclaveArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopEnclaveArgs;
+  static deserializeBinaryFromReader(message: StopEnclaveArgs, reader: jspb.BinaryReader): StopEnclaveArgs;
+}
+
+export namespace StopEnclaveArgs {
+  export type AsObject = {
+    enclaveId: string,
+  }
+}
+
 export class DestroyEnclaveArgs extends jspb.Message {
   getEnclaveId(): string;
   setEnclaveId(value: string): void;

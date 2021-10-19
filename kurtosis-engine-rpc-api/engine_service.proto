@@ -11,7 +11,9 @@ service EngineService {
   rpc CreateEnclave(CreateEnclaveArgs) returns (CreateEnclaveResponse) {};
   // Get a running Kurtosis Enclave
   rpc GetEnclave(GetEnclaveArgs) returns (GetEnclaveResponse) {};
-  // Destroy a running Kurtosis Enclave
+  // Stops all containers in an enclave
+  rpc StopEnclave(StopEnclaveArgs) returns (google.protobuf.Empty) {};
+  // Destroys an enclave, removing all artifacts associated with it
   rpc DestroyEnclave(DestroyEnclaveArgs) returns (google.protobuf.Empty) {};
 }
 
@@ -73,7 +75,17 @@ message GetEnclaveResponse {
 // ==============================================================================================
 //                                       Destroy Enclave
 // ==============================================================================================
+message StopEnclaveArgs {
+  //The ID of the Kurtosis enclave to stop
+  string enclave_id = 1;
+}
+
+
+
+// ==============================================================================================
+//                                       Destroy Enclave
+// ==============================================================================================
 message DestroyEnclaveArgs {
-  //The ID of the new Kurtosis Enclave
+  //The ID of the Kurtosis enclave to destroy
   string enclave_id = 1;
 }
