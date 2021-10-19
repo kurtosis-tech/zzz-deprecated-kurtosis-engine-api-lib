@@ -1,4 +1,8 @@
 # TBD
+### Features
+* Added `APIContainerContext` object to store API container data like ip address and host's ip address
+* Added `EnclaveContext` object to store Kurtosis Enclave information like network ID and the API container context
+* Added `KurtosisContext` which is a low level API created for simplify `Kurtosis Engine Server` users interaction
 
 # 0.3.3
 ### Features
