@@ -2,6 +2,17 @@
 ### Features
 * Added a `StopEnclave` endpoint, for stopping the containers in an enclave
 
+# 0.3.2
+### Change
+* Renamed `engine_server_consts` Golang and Typescript constants files to `kurtosis_engine_rpc_api_consts`
+
+# 0.3.1
+### Features
+* Added `kurtosis_engine_server_rpc_api_consts` Typescript version
+
+### Fixes
+* Regenerated protobuf bindings file with latest RPC API messages
+
 # 0.3.0
 ### Breaking changes
 * Renamed `network_ip` field in `GetEnclaveResponse` protobuf message to `network_cidr` because the value will contain IP address and Mask
