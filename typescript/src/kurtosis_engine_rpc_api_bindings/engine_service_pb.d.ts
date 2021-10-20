@@ -100,63 +100,100 @@ export namespace CreateEnclaveResponse {
   }
 }
 
-export class GetEnclaveArgs extends jspb.Message {
-  getEnclaveId(): string;
-  setEnclaveId(value: string): void;
+export class EnclaveAPIContainerInfo extends jspb.Message {
+  getContainerId(): string;
+  setContainerId(value: string): void;
+
+  getIpInsideEnclave(): string;
+  setIpInsideEnclave(value: string): void;
+
+  getPortInsideEnclave(): number;
+  setPortInsideEnclave(value: number): void;
+
+  getIpOnHostMachine(): string;
+  setIpOnHostMachine(value: string): void;
+
+  getPortOnHostMachine(): number;
+  setPortOnHostMachine(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetEnclaveArgs.AsObject;
-  static toObject(includeInstance: boolean, msg: GetEnclaveArgs): GetEnclaveArgs.AsObject;
+  toObject(includeInstance?: boolean): EnclaveAPIContainerInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: EnclaveAPIContainerInfo): EnclaveAPIContainerInfo.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: GetEnclaveArgs, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetEnclaveArgs;
-  static deserializeBinaryFromReader(message: GetEnclaveArgs, reader: jspb.BinaryReader): GetEnclaveArgs;
+  static serializeBinaryToWriter(message: EnclaveAPIContainerInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnclaveAPIContainerInfo;
+  static deserializeBinaryFromReader(message: EnclaveAPIContainerInfo, reader: jspb.BinaryReader): EnclaveAPIContainerInfo;
 }
 
-export namespace GetEnclaveArgs {
+export namespace EnclaveAPIContainerInfo {
   export type AsObject = {
-    enclaveId: string,
+    containerId: string,
+    ipInsideEnclave: string,
+    portInsideEnclave: number,
+    ipOnHostMachine: string,
+    portOnHostMachine: number,
   }
 }
 
-export class GetEnclaveResponse extends jspb.Message {
+export class EnclaveInfo extends jspb.Message {
+  getEnclaveId(): string;
+  setEnclaveId(value: string): void;
+
   getNetworkId(): string;
   setNetworkId(value: string): void;
 
   getNetworkCidr(): string;
   setNetworkCidr(value: string): void;
 
-  getApiContainerId(): string;
-  setApiContainerId(value: string): void;
+  getContainersStatus(): EnclaveContainersStatusMap[keyof EnclaveContainersStatusMap];
+  setContainersStatus(value: EnclaveContainersStatusMap[keyof EnclaveContainersStatusMap]): void;
 
-  getApiContainerIpInsideNetwork(): string;
-  setApiContainerIpInsideNetwork(value: string): void;
+  getApiContainerStatus(): EnclaveAPIContainerStatusMap[keyof EnclaveAPIContainerStatusMap];
+  setApiContainerStatus(value: EnclaveAPIContainerStatusMap[keyof EnclaveAPIContainerStatusMap]): void;
 
-  getApiContainerHostIp(): string;
-  setApiContainerHostIp(value: string): void;
-
-  getApiContainerHostPort(): string;
-  setApiContainerHostPort(value: string): void;
+  hasApiContainerInfo(): boolean;
+  clearApiContainerInfo(): void;
+  getApiContainerInfo(): EnclaveAPIContainerInfo | undefined;
+  setApiContainerInfo(value?: EnclaveAPIContainerInfo): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetEnclaveResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: GetEnclaveResponse): GetEnclaveResponse.AsObject;
+  toObject(includeInstance?: boolean): EnclaveInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: EnclaveInfo): EnclaveInfo.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: GetEnclaveResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetEnclaveResponse;
-  static deserializeBinaryFromReader(message: GetEnclaveResponse, reader: jspb.BinaryReader): GetEnclaveResponse;
+  static serializeBinaryToWriter(message: EnclaveInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnclaveInfo;
+  static deserializeBinaryFromReader(message: EnclaveInfo, reader: jspb.BinaryReader): EnclaveInfo;
 }
 
-export namespace GetEnclaveResponse {
+export namespace EnclaveInfo {
   export type AsObject = {
+    enclaveId: string,
     networkId: string,
     networkCidr: string,
-    apiContainerId: string,
-    apiContainerIpInsideNetwork: string,
-    apiContainerHostIp: string,
-    apiContainerHostPort: string,
+    containersStatus: EnclaveContainersStatusMap[keyof EnclaveContainersStatusMap],
+    apiContainerStatus: EnclaveAPIContainerStatusMap[keyof EnclaveAPIContainerStatusMap],
+    apiContainerInfo?: EnclaveAPIContainerInfo.AsObject,
+  }
+}
+
+export class GetEnclavesResponse extends jspb.Message {
+  getEnclaveInfoMap(): jspb.Map<string, EnclaveInfo>;
+  clearEnclaveInfoMap(): void;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetEnclavesResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetEnclavesResponse): GetEnclavesResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetEnclavesResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetEnclavesResponse;
+  static deserializeBinaryFromReader(message: GetEnclavesResponse, reader: jspb.BinaryReader): GetEnclavesResponse;
+}
+
+export namespace GetEnclavesResponse {
+  export type AsObject = {
+    enclaveInfoMap: Array<[string, EnclaveInfo.AsObject]>,
   }
 }
 
@@ -199,4 +236,20 @@ export namespace DestroyEnclaveArgs {
     enclaveId: string,
   }
 }
+
+export interface EnclaveContainersStatusMap {
+  ENCLAVECONTAINERSSTATUS_EMPTY: 0;
+  ENCLAVECONTAINERSSTATUS_RUNNING: 1;
+  ENCLAVECONTAINERSSTATUS_STOPPED: 2;
+}
+
+export const EnclaveContainersStatus: EnclaveContainersStatusMap;
+
+export interface EnclaveAPIContainerStatusMap {
+  ENCLAVEAPICONTAINERSTATUS_NONEXISTENT: 0;
+  ENCLAVEAPICONTAINERSTATUS_RUNNING: 1;
+  ENCLAVEAPICONTAINERSTATUS_STOPPED: 2;
+}
+
+export const EnclaveAPIContainerStatus: EnclaveAPIContainerStatusMap;
 

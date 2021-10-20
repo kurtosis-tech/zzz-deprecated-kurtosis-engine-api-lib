@@ -1,5 +1,12 @@
 # TBD
 
+# 0.5.0
+### Features
+* Added the `GetEnclaves` call, which returns more detailed information about an enclave
+
+### Breaking Changes
+* Removed the `GetEnclave` function and replaced it with `GetEnclaves`
+
 # 0.4.2
 ### Features
 * Added own version constants, so client code can tell what version of this library it's using
