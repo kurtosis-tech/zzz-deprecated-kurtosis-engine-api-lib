@@ -1,4 +1,6 @@
 # TBD
+
+# 0.4.2
 ### Features
 * Added own version constants, so client code can tell what version of this library it's using
 
