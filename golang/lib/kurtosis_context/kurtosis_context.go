@@ -76,7 +76,7 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	return enclaveContext, nil
 }
 
-func (kurtosisCtx *KurtosisContext) GeEnclave(enclaveId string) (*enclave_context.EnclaveContext, error) {
+func (kurtosisCtx *KurtosisContext) GetEnclave(enclaveId string) (*enclave_context.EnclaveContext, error) {
 	getEnclaveArgs := &kurtosis_engine_rpc_api_bindings.GetEnclaveArgs{
 		EnclaveId: enclaveId,
 	}
