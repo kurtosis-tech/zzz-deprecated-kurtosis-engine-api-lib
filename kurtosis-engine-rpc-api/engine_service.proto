@@ -11,8 +11,8 @@ service EngineService {
   rpc GetEngineInfo(google.protobuf.Empty) returns (GetEngineInfoResponse) {};
   // Creates a new Kurtosis Enclave
   rpc CreateEnclave(CreateEnclaveArgs) returns (CreateEnclaveResponse) {};
-  // Get a running Kurtosis Enclave
-  rpc GetEnclave(GetEnclaveArgs) returns (GetEnclaveResponse) {};
+  // Returns information about the existing enclaves
+  rpc GetEnclaves(google.protobuf.Empty) returns (GetEnclavesResponse) {};
   // Stops all containers in an enclave
   rpc StopEnclave(StopEnclaveArgs) returns (google.protobuf.Empty) {};
   // Destroys an enclave, removing all artifacts associated with it
@@ -59,28 +59,74 @@ message CreateEnclaveResponse {
 }
 
 // ==============================================================================================
-//                                          Get Enclave
+//                                            Get Enclaves
 // ==============================================================================================
-message GetEnclaveArgs {
-  //The ID of the enclave to retrieve
+// Status of the containers in the enclave
+// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum valuee uniqueness works
+enum EnclaveContainersStatus {
+  // The enclave has been created, but there are no containers inside it
+  EnclaveContainersStatus_EMPTY = 0;
+
+  // One or more containers are running in the enclave (which may or may not include the API container, depending on if the user was manually stopping/removing containers)
+  EnclaveContainersStatus_RUNNING = 1;
+
+  // There are >= 1 container in the enclave, but they're all stopped
+  EnclaveContainersStatus_STOPPED = 2;
+}
+
+// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum valuee uniqueness works
+enum EnclaveAPIContainerStatus {
+  // No API container exists in the enclave
+  // This is the only valid value when the enclave containers status is "EMPTY"
+  EnclaveAPIContainerStatus_NONEXISTENT = 0;
+
+  // An API container exists and is running
+  // NOTE: this does NOT say that the server inside the API container is available, because checking if it's available requires making a call to the API container
+  //  If we have a lot of API containers, we'd be making tons of calls
+  EnclaveAPIContainerStatus_RUNNING = 1;
+
+  // An API container exists, but isn't running
+  EnclaveAPIContainerStatus_STOPPED = 2;
+}
+
+message EnclaveAPIContainerInfo {
+  //The container engine ID of the API container
+  string container_id = 1;
+  // The IP inside the enclave network of the API container (i.e. how services inside the network can reach the API container)
+  string ip_inside_enclave = 2;
+  // The port inside the enclave network that the API container is listening on
+  uint32 port_inside_enclave = 3;
+  // The interface IP on the container engine host machine where the API container can be reached
+  string ip_on_host_machine = 4;
+  // The port on the container engine host machine where the API container can be reached
+  uint32 port_on_host_machine = 5;
+}
+
+// Enclaves are defined by a network in the container system, which is why there's a bunch of network information here
+message EnclaveInfo {
+  // ID of the enclave
   string enclave_id = 1;
+
+  // The ID of the enclave's network in the container engine
+  string network_id = 2;
+
+  //The CIDR of the enclave's network in the container engine
+  string network_cidr = 3;
+
+  // State of all containers in the enclave
+  EnclaveContainersStatus containers_status = 4;
+
+  // State specifically of the API container
+  EnclaveAPIContainerStatus api_container_status = 5;
+
+  // NOTE: Will not be present if the API container status is "NONEXISTENT"!!
+  EnclaveAPIContainerInfo api_container_info = 6;
 }
 
-message GetEnclaveResponse {
-  //The Docker network id that is part of the Kurtosis Enclave
-  string network_id = 1;
-  //The Docker network CIDR
-  string network_cidr = 2;
-  //The API container ID that is currently running in the Kurtosis Enclave
-  string api_container_id = 3;
-  //The IP of the interface on the host machine where the API container's port can be accessed
-  string api_container_ip_inside_network = 4;
-  //The API container Host IP address
-  string api_container_host_ip = 5;
-  //The port number on the host machine where the API container can be reached
-  string api_container_host_port = 6;
+message GetEnclavesResponse {
+  // Mapping of enclave_id -> info_about_enclave
+  map<string, EnclaveInfo> enclave_info = 1;
 }
-
 
 // ==============================================================================================
 //                                       Destroy Enclave

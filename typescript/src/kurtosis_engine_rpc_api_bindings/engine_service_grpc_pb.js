@@ -38,26 +38,15 @@ function deserialize_engine_api_DestroyEnclaveArgs(buffer_arg) {
   return engine_service_pb.DestroyEnclaveArgs.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_engine_api_GetEnclaveArgs(arg) {
-  if (!(arg instanceof engine_service_pb.GetEnclaveArgs)) {
-    throw new Error('Expected argument of type engine_api.GetEnclaveArgs');
+function serialize_engine_api_GetEnclavesResponse(arg) {
+  if (!(arg instanceof engine_service_pb.GetEnclavesResponse)) {
+    throw new Error('Expected argument of type engine_api.GetEnclavesResponse');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_engine_api_GetEnclaveArgs(buffer_arg) {
-  return engine_service_pb.GetEnclaveArgs.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_engine_api_GetEnclaveResponse(arg) {
-  if (!(arg instanceof engine_service_pb.GetEnclaveResponse)) {
-    throw new Error('Expected argument of type engine_api.GetEnclaveResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_engine_api_GetEnclaveResponse(buffer_arg) {
-  return engine_service_pb.GetEnclaveResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_engine_api_GetEnclavesResponse(buffer_arg) {
+  return engine_service_pb.GetEnclavesResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_engine_api_GetEngineInfoResponse(arg) {
@@ -119,17 +108,17 @@ createEnclave: {
     responseSerialize: serialize_engine_api_CreateEnclaveResponse,
     responseDeserialize: deserialize_engine_api_CreateEnclaveResponse,
   },
-  // Get a running Kurtosis Enclave
-getEnclave: {
-    path: '/engine_api.EngineService/GetEnclave',
+  // Returns information about the existing enclaves
+getEnclaves: {
+    path: '/engine_api.EngineService/GetEnclaves',
     requestStream: false,
     responseStream: false,
-    requestType: engine_service_pb.GetEnclaveArgs,
-    responseType: engine_service_pb.GetEnclaveResponse,
-    requestSerialize: serialize_engine_api_GetEnclaveArgs,
-    requestDeserialize: deserialize_engine_api_GetEnclaveArgs,
-    responseSerialize: serialize_engine_api_GetEnclaveResponse,
-    responseDeserialize: deserialize_engine_api_GetEnclaveResponse,
+    requestType: google_protobuf_empty_pb.Empty,
+    responseType: engine_service_pb.GetEnclavesResponse,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
+    responseSerialize: serialize_engine_api_GetEnclavesResponse,
+    responseDeserialize: deserialize_engine_api_GetEnclavesResponse,
   },
   // Stops all containers in an enclave
 stopEnclave: {

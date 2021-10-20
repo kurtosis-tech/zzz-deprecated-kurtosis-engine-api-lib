@@ -23,8 +23,8 @@ type EngineServiceClient interface {
 	GetEngineInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEngineInfoResponse, error)
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(ctx context.Context, in *CreateEnclaveArgs, opts ...grpc.CallOption) (*CreateEnclaveResponse, error)
-	// Get a running Kurtosis Enclave
-	GetEnclave(ctx context.Context, in *GetEnclaveArgs, opts ...grpc.CallOption) (*GetEnclaveResponse, error)
+	// Returns information about the existing enclaves
+	GetEnclaves(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEnclavesResponse, error)
 	// Stops all containers in an enclave
 	StopEnclave(ctx context.Context, in *StopEnclaveArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Destroys an enclave, removing all artifacts associated with it
@@ -57,9 +57,9 @@ func (c *engineServiceClient) CreateEnclave(ctx context.Context, in *CreateEncla
 	return out, nil
 }
 
-func (c *engineServiceClient) GetEnclave(ctx context.Context, in *GetEnclaveArgs, opts ...grpc.CallOption) (*GetEnclaveResponse, error) {
-	out := new(GetEnclaveResponse)
-	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetEnclave", in, out, opts...)
+func (c *engineServiceClient) GetEnclaves(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEnclavesResponse, error) {
+	out := new(GetEnclavesResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetEnclaves", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,8 @@ type EngineServiceServer interface {
 	GetEngineInfo(context.Context, *emptypb.Empty) (*GetEngineInfoResponse, error)
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error)
-	// Get a running Kurtosis Enclave
-	GetEnclave(context.Context, *GetEnclaveArgs) (*GetEnclaveResponse, error)
+	// Returns information about the existing enclaves
+	GetEnclaves(context.Context, *emptypb.Empty) (*GetEnclavesResponse, error)
 	// Stops all containers in an enclave
 	StopEnclave(context.Context, *StopEnclaveArgs) (*emptypb.Empty, error)
 	// Destroys an enclave, removing all artifacts associated with it
@@ -111,8 +111,8 @@ func (UnimplementedEngineServiceServer) GetEngineInfo(context.Context, *emptypb.
 func (UnimplementedEngineServiceServer) CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnclave not implemented")
 }
-func (UnimplementedEngineServiceServer) GetEnclave(context.Context, *GetEnclaveArgs) (*GetEnclaveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEnclave not implemented")
+func (UnimplementedEngineServiceServer) GetEnclaves(context.Context, *emptypb.Empty) (*GetEnclavesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnclaves not implemented")
 }
 func (UnimplementedEngineServiceServer) StopEnclave(context.Context, *StopEnclaveArgs) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopEnclave not implemented")
@@ -169,20 +169,20 @@ func _EngineService_CreateEnclave_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EngineService_GetEnclave_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEnclaveArgs)
+func _EngineService_GetEnclaves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EngineServiceServer).GetEnclave(ctx, in)
+		return srv.(EngineServiceServer).GetEnclaves(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/engine_api.EngineService/GetEnclave",
+		FullMethod: "/engine_api.EngineService/GetEnclaves",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EngineServiceServer).GetEnclave(ctx, req.(*GetEnclaveArgs))
+		return srv.(EngineServiceServer).GetEnclaves(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -239,8 +239,8 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _EngineService_CreateEnclave_Handler,
 		},
 		{
-			MethodName: "GetEnclave",
-			Handler:    _EngineService_GetEnclave_Handler,
+			MethodName: "GetEnclaves",
+			Handler:    _EngineService_GetEnclaves_Handler,
 		},
 		{
 			MethodName: "StopEnclave",
