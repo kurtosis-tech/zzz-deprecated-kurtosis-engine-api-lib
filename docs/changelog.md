@@ -1,4 +1,6 @@
 # TBD
+
+# 0.5.0
 ### Features
 * Added the `GetEnclaves` call, which returns more detailed information about an enclave
 
