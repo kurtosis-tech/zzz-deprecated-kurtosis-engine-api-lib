@@ -1,4 +1,9 @@
 # TBD
+### Features
+* Added own version constants, so client code can tell what version of this library it's using
+
+### Fixes
+* Fixed the Typescript library not actually exporting anything
 
 # 0.4.1
 ### Features
