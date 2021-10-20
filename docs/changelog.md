@@ -1,5 +1,12 @@
 # TBD
 
+# 0.4.2
+### Features
+* Added own version constants, so client code can tell what version of this library it's using
+
+### Fixes
+* Fixed the Typescript library not actually exporting anything
+
 # 0.4.1
 ### Features
 * Added a `GetEngineInfo` endpoint, for a) getting engine API version and b) checking that the engine is available
