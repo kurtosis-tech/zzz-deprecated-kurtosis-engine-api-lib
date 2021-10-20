@@ -7,8 +7,8 @@ import (
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_server_rpc_api_consts"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/api_container_context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/enclave_context"
-	"google.golang.org/grpc"
 	"github.com/palantir/stacktrace"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -58,7 +58,8 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 
 	response, err := kurtosisCtx.client.CreateEnclave(context.Background(), createEnclaveArgs)
 	if err != nil {
-		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave, make sure that you already started Kurtosis Engine Sever with `kurtosis engine start` command")
+		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v', make sure that " +
+			"you already started Kurtosis Engine Sever with `kurtosis engine start` command", enclaveId)
 	}
 
 	apiContainerContext := api_container_context.NewAPIContainerContext(
@@ -74,4 +75,45 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 		apiContainerContext)
 
 	return enclaveContext, nil
+}
+
+func (kurtosisCtx *KurtosisContext) GeEnclave(enclaveId string) (*enclave_context.EnclaveContext, error) {
+	getEnclaveArgs := &kurtosis_engine_rpc_api_bindings.GetEnclaveArgs{
+		EnclaveId: enclaveId,
+	}
+
+	response, err := kurtosisCtx.client.GetEnclave(context.Background(), getEnclaveArgs)
+	if err != nil {
+		return nil,
+		stacktrace.Propagate(
+			err,
+			"An error occurred getting an enclave with ID '%v', make sure that you already " +
+				"started Kurtosis Engine Sever with `kurtosis engine start` command", enclaveId)
+	}
+
+	apiContainerContext := api_container_context.NewAPIContainerContext(
+		response.ApiContainerId,
+		response.ApiContainerIpInsideNetwork,
+		response.ApiContainerHostIp,
+		response.ApiContainerHostPort)
+
+	enclaveContext := enclave_context.NewEnclaveContext(
+		enclaveId,
+		response.NetworkId,
+		response.NetworkCidr,
+		apiContainerContext)
+
+	return enclaveContext, nil
+}
+
+func (kurtosisCtx *KurtosisContext) DestroyEnclave(enclaveId string) error {
+	destroyEnclaveArgs := &kurtosis_engine_rpc_api_bindings.DestroyEnclaveArgs{
+		EnclaveId: enclaveId,
+	}
+
+	if _, err := kurtosisCtx.client.DestroyEnclave(context.Background(), destroyEnclaveArgs); err != nil {
+		return stacktrace.Propagate(err, "An error occurred destroying enclave with ID '%v'", enclaveId)
+	}
+
+	return nil
 }
