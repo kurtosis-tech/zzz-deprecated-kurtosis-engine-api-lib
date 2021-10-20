@@ -1,4 +1,12 @@
 # TBD
+### Fixes
+* Changed the Go `ListenPort` constant to be a `uint16`, rather than an `int`, because ports can be neither negative nor greater than 2 ^ 16
+* Made the package name containing the RPC API consts match the same format as the `_bindings` package
+
+### Breaking Changes
+* The Go `ListenPort` constant is now a `uint16`, rather than an `int`
+* Changed the package `kurtosis_engine_server_rpc_api_consts` -> `kurtosis_engine_rpc_api_consts`
+    * Users should use the new package name
 
 # 0.3.3
 ### Features
