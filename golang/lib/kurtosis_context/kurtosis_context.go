@@ -9,6 +9,7 @@ import (
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/enclave_context"
 	"github.com/palantir/stacktrace"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -76,12 +77,9 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	return enclaveContext, nil
 }
 
-func (kurtosisCtx *KurtosisContext) GetEnclave(enclaveId string) (*enclave_context.EnclaveContext, error) {
-	getEnclaveArgs := &kurtosis_engine_rpc_api_bindings.GetEnclaveArgs{
-		EnclaveId: enclaveId,
-	}
+func (kurtosisCtx *KurtosisContext) GetEnclaves(enclaveId string) (*enclave_context.EnclaveContext, error) {
 
-	response, err := kurtosisCtx.client.GetEnclave(context.Background(), getEnclaveArgs)
+	response, err := kurtosisCtx.client.GetEnclaves(context.Background(), &emptypb.Empty{})
 	if err != nil {
 		return nil,
 		stacktrace.Propagate(
@@ -89,7 +87,7 @@ func (kurtosisCtx *KurtosisContext) GetEnclave(enclaveId string) (*enclave_conte
 			"An error occurred getting an enclave with ID '%v'", enclaveId)
 	}
 
-	apiContainerContext := api_container_context.NewAPIContainerContext(
+	/*apiContainerContext := api_container_context.NewAPIContainerContext(
 		response.ApiContainerId,
 		response.ApiContainerIpInsideNetwork,
 		response.ApiContainerHostIp,
@@ -99,9 +97,22 @@ func (kurtosisCtx *KurtosisContext) GetEnclave(enclaveId string) (*enclave_conte
 		enclaveId,
 		response.NetworkId,
 		response.NetworkCidr,
-		apiContainerContext)
+		apiContainerContext)*/
 
 	return enclaveContext, nil
+}
+
+func getEnclaveContextMapFromEnclaveInfoMap(
+	enclaveInfoMap map[string]*kurtosis_engine_rpc_api_bindings.EnclaveInfo) map[string]*enclave_context.EnclaveContext {
+
+	var enclaveContextMap map[string]*enclave_context.EnclaveContext
+
+	for enclaveId, enclaveInfo := range enclaveInfoMap {
+		enclaveContext := enclave_context.NewEnclaveContext(
+			enclaveInfo.EnclaveId,
+			enclaveInfo.NetworkId,
+			)
+	}
 }
 
 func (kurtosisCtx *KurtosisContext) DestroyEnclave(enclaveId string) error {

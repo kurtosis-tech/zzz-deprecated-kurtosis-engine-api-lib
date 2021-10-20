@@ -25,6 +25,7 @@ const (
 //                                            Get Enclaves
 // ==============================================================================================
 // Status of the containers in the enclave
+// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum valuee uniqueness works
 type EnclaveContainersStatus int32
 
 const (
@@ -77,6 +78,7 @@ func (EnclaveContainersStatus) EnumDescriptor() ([]byte, []int) {
 	return file_engine_service_proto_rawDescGZIP(), []int{0}
 }
 
+// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum valuee uniqueness works
 type EnclaveAPIContainerStatus int32
 
 const (

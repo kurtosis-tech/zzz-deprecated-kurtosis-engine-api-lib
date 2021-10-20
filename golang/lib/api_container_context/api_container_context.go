@@ -1,30 +1,35 @@
 package api_container_context
 
 type APIContainerContext struct {
-	apiContainerID  string
-	ipInsideNetwork string
-	hostIp string
-	hostPort string
+	containerID  string
+	ipInsideEnclave string
+	portInsideEnclave uint32
+	ipOnHostMachine string
+	portOnHostMachine uint32
 }
 
-func NewAPIContainerContext(aPIContainerID string, ipInsideNetwork string, hostIp string, hostPort string) *APIContainerContext {
-	return &APIContainerContext{apiContainerID: aPIContainerID, ipInsideNetwork: ipInsideNetwork, hostIp: hostIp, hostPort: hostPort}
+func NewAPIContainerContext(containerID string, ipInsideEnclave string, portInsideEnclave uint32, ipOnHostMachine string, portOnHostMachine uint32) *APIContainerContext {
+	return &APIContainerContext{containerID: containerID, ipInsideEnclave: ipInsideEnclave, portInsideEnclave: portInsideEnclave, ipOnHostMachine: ipOnHostMachine, portOnHostMachine: portOnHostMachine}
 }
 
-func (A APIContainerContext) GetAPIContainerID() string {
-	return A.apiContainerID
+func (A APIContainerContext) GetContainerID() string {
+	return A.containerID
 }
 
-func (A APIContainerContext) GetIpInsideNetwork() string {
-	return A.ipInsideNetwork
+func (A APIContainerContext) GetIpInsideEnclave() string {
+	return A.ipInsideEnclave
 }
 
-func (A APIContainerContext) GetHostIp() string {
-	return A.hostIp
+func (A APIContainerContext) GetPortInsideEnclave() uint32 {
+	return A.portInsideEnclave
 }
 
-func (A APIContainerContext) GetHostPort() string {
-	return A.hostPort
+func (A APIContainerContext) GetIpOnHostMachine() string {
+	return A.ipOnHostMachine
+}
+
+func (A APIContainerContext) GetPortOnHostMachine() uint32 {
+	return A.portOnHostMachine
 }
 
 

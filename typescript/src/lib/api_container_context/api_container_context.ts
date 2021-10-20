@@ -1,30 +1,36 @@
 
 export class APIContainerContext {
-    private readonly _apiContainerID: string;
-    private readonly _ipInsideNetwork: string;
-    private readonly _hostIP: string;
-    private readonly _hostPort: string;
+    private readonly containerID:  string
+    private readonly ipInsideEnclave: string
+    private readonly portInsideEnclave: number
+    private readonly ipOnHostMachine: string
+    private readonly portOnHostMachine: number
 
-    constructor(apiContainerID: string, ipInsideNetwork: string, hostIP: string, hostPort: string) {
-        this._apiContainerID = apiContainerID;
-        this._ipInsideNetwork = ipInsideNetwork;
-        this._hostIP = hostIP;
-        this._hostPort = hostPort;
+    constructor(containerID: string, ipInsideEnclave: string, portInsideEnclave: number, ipOnHostMachine: string, portOnHostMachine: number) {
+        this.containerID = containerID;
+        this.ipInsideEnclave = ipInsideEnclave;
+        this.portInsideEnclave = portInsideEnclave;
+        this.ipOnHostMachine = ipOnHostMachine;
+        this.portOnHostMachine = portOnHostMachine;
     }
 
-    public getApiContainerID(): string {
-        return this._apiContainerID;
+    public getContainerID(): string {
+        return this.containerID;
     }
 
-    public getIpInsideNetwork(): string {
-        return this._ipInsideNetwork;
+    public getIpInsideEnclave(): string {
+        return this.ipInsideEnclave;
     }
 
-    public getHostIP(): string {
-        return this._hostIP;
+    public getPortInsideEnclave(): number {
+        return this.portInsideEnclave;
     }
 
-    public getHostPort(): string {
-        return this._hostPort;
+    public getIpOnHostMachine(): string {
+        return this.ipOnHostMachine;
+    }
+
+    public getPortOnHostMachine(): number {
+        return this.portOnHostMachine;
     }
 }
