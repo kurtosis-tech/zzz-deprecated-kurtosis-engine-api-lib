@@ -60,6 +60,17 @@ function deserialize_engine_api_GetEnclaveResponse(buffer_arg) {
   return engine_service_pb.GetEnclaveResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_engine_api_GetEngineInfoResponse(arg) {
+  if (!(arg instanceof engine_service_pb.GetEngineInfoResponse)) {
+    throw new Error('Expected argument of type engine_api.GetEngineInfoResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_engine_api_GetEngineInfoResponse(buffer_arg) {
+  return engine_service_pb.GetEngineInfoResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_engine_api_StopEnclaveArgs(arg) {
   if (!(arg instanceof engine_service_pb.StopEnclaveArgs)) {
     throw new Error('Expected argument of type engine_api.StopEnclaveArgs');
@@ -84,6 +95,18 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 
 
 var EngineServiceService = exports.EngineServiceService = {
+  // Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
+getEngineInfo: {
+    path: '/engine_api.EngineService/GetEngineInfo',
+    requestStream: false,
+    responseStream: false,
+    requestType: google_protobuf_empty_pb.Empty,
+    responseType: engine_service_pb.GetEngineInfoResponse,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
+    responseSerialize: serialize_engine_api_GetEngineInfoResponse,
+    responseDeserialize: deserialize_engine_api_GetEngineInfoResponse,
+  },
   // Creates a new Kurtosis Enclave
 createEnclave: {
     path: '/engine_api.EngineService/CreateEnclave',

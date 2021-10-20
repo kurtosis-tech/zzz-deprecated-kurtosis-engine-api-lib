@@ -1,5 +1,9 @@
 # TBD
 
+# 0.4.1
+### Features
+* Added a `GetEngineInfo` endpoint, for a) getting engine API version and b) checking that the engine is available
+
 # 0.4.0
 ### Fixes
 * Changed the Go `ListenPort` constant to be a `uint16`, rather than an `int`, because ports can be neither negative nor greater than 2 ^ 16
