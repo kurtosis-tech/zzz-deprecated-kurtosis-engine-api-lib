@@ -58,8 +58,7 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 
 	response, err := kurtosisCtx.client.CreateEnclave(context.Background(), createEnclaveArgs)
 	if err != nil {
-		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v', make sure that " +
-			"you already started Kurtosis Engine Sever with `kurtosis engine start` command", enclaveId)
+		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v'", enclaveId)
 	}
 
 	apiContainerContext := api_container_context.NewAPIContainerContext(
@@ -87,8 +86,7 @@ func (kurtosisCtx *KurtosisContext) GeEnclave(enclaveId string) (*enclave_contex
 		return nil,
 		stacktrace.Propagate(
 			err,
-			"An error occurred getting an enclave with ID '%v', make sure that you already " +
-				"started Kurtosis Engine Sever with `kurtosis engine start` command", enclaveId)
+			"An error occurred getting an enclave with ID '%v'", enclaveId)
 	}
 
 	apiContainerContext := api_container_context.NewAPIContainerContext(
