@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
-	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_server_rpc_api_consts"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_consts"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/api_container_context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/enclave_context"
 	"github.com/palantir/stacktrace"
@@ -19,8 +19,8 @@ type KurtosisContext struct {
 	client kurtosis_engine_rpc_api_bindings.EngineServiceClient
 }
 
-func NewKurtosisContext() (*KurtosisContext, error) {
-	kurtosisEngineSocketStr := fmt.Sprintf("%v:%v", localHostIPAddressStr, kurtosis_engine_server_rpc_api_consts.ListenPort)
+func NewKurtosisContextFromLocalEngine() (*KurtosisContext, error) {
+	kurtosisEngineSocketStr := fmt.Sprintf("%v:%v", localHostIPAddressStr, kurtosis_engine_rpc_api_consts.ListenPort)
 
 	// TODO SECURITY: Use HTTPS to ensure we're connecting to the real Kurtosis API servers
 	conn, err := grpc.Dial(kurtosisEngineSocketStr, grpc.WithInsecure())

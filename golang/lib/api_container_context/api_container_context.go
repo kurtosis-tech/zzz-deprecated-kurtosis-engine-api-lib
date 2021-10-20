@@ -1,18 +1,18 @@
 package api_container_context
 
 type APIContainerContext struct {
-	aPIContainerID string
+	apiContainerID  string
 	ipInsideNetwork string
 	hostIp string
 	hostPort string
 }
 
 func NewAPIContainerContext(aPIContainerID string, ipInsideNetwork string, hostIp string, hostPort string) *APIContainerContext {
-	return &APIContainerContext{aPIContainerID: aPIContainerID, ipInsideNetwork: ipInsideNetwork, hostIp: hostIp, hostPort: hostPort}
+	return &APIContainerContext{apiContainerID: aPIContainerID, ipInsideNetwork: ipInsideNetwork, hostIp: hostIp, hostPort: hostPort}
 }
 
 func (A APIContainerContext) GetAPIContainerID() string {
-	return A.aPIContainerID
+	return A.apiContainerID
 }
 
 func (A APIContainerContext) GetIpInsideNetwork() string {
