@@ -7,6 +7,8 @@ option go_package = "github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kur
 import "google/protobuf/empty.proto";
 
 service EngineService {
+  // Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
+  rpc GetEngineInfo(google.protobuf.Empty) returns (GetEngineInfoResponse) {};
   // Creates a new Kurtosis Enclave
   rpc CreateEnclave(CreateEnclaveArgs) returns (CreateEnclaveResponse) {};
   // Get a running Kurtosis Enclave
@@ -15,6 +17,14 @@ service EngineService {
   rpc StopEnclave(StopEnclaveArgs) returns (google.protobuf.Empty) {};
   // Destroys an enclave, removing all artifacts associated with it
   rpc DestroyEnclave(DestroyEnclaveArgs) returns (google.protobuf.Empty) {};
+}
+
+// ==============================================================================================
+//                                        Get Engine Info
+// ==============================================================================================
+message GetEngineInfoResponse {
+  // Version of the engine API that this server implements
+  string engine_api_version = 1;
 }
 
 // ==============================================================================================

@@ -4,6 +4,26 @@
 import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
+export class GetEngineInfoResponse extends jspb.Message {
+  getEngineApiVersion(): string;
+  setEngineApiVersion(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetEngineInfoResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetEngineInfoResponse): GetEngineInfoResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetEngineInfoResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetEngineInfoResponse;
+  static deserializeBinaryFromReader(message: GetEngineInfoResponse, reader: jspb.BinaryReader): GetEngineInfoResponse;
+}
+
+export namespace GetEngineInfoResponse {
+  export type AsObject = {
+    engineApiVersion: string,
+  }
+}
+
 export class CreateEnclaveArgs extends jspb.Message {
   getEnclaveId(): string;
   setEnclaveId(value: string): void;

@@ -4,6 +4,27 @@
 * Added `EnclaveContext` object to store Kurtosis Enclave information like network ID and the API container context
 * Added `KurtosisContext` which is a low level API created for simplify `Kurtosis Engine Server` users interaction
 
+# 0.4.2
+### Features
+* Added own version constants, so client code can tell what version of this library it's using
+
+### Fixes
+* Fixed the Typescript library not actually exporting anything
+
+# 0.4.1
+### Features
+* Added a `GetEngineInfo` endpoint, for a) getting engine API version and b) checking that the engine is available
+
+# 0.4.0
+### Fixes
+* Changed the Go `ListenPort` constant to be a `uint16`, rather than an `int`, because ports can be neither negative nor greater than 2 ^ 16
+* Made the package name containing the RPC API consts match the same format as the `_bindings` package
+
+### Breaking Changes
+* The Go `ListenPort` constant is now a `uint16`, rather than an `int`
+* Changed the package `kurtosis_engine_server_rpc_api_consts` -> `kurtosis_engine_rpc_api_consts`
+    * Users should use the new package name
+
 # 0.3.3
 ### Features
 * Added a `StopEnclave` endpoint, for stopping the containers in an enclave

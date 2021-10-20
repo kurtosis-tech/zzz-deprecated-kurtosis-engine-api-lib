@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EngineServiceClient interface {
+	// Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
+	GetEngineInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEngineInfoResponse, error)
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(ctx context.Context, in *CreateEnclaveArgs, opts ...grpc.CallOption) (*CreateEnclaveResponse, error)
 	// Get a running Kurtosis Enclave
@@ -35,6 +37,15 @@ type engineServiceClient struct {
 
 func NewEngineServiceClient(cc grpc.ClientConnInterface) EngineServiceClient {
 	return &engineServiceClient{cc}
+}
+
+func (c *engineServiceClient) GetEngineInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEngineInfoResponse, error) {
+	out := new(GetEngineInfoResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetEngineInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *engineServiceClient) CreateEnclave(ctx context.Context, in *CreateEnclaveArgs, opts ...grpc.CallOption) (*CreateEnclaveResponse, error) {
@@ -77,6 +88,8 @@ func (c *engineServiceClient) DestroyEnclave(ctx context.Context, in *DestroyEnc
 // All implementations must embed UnimplementedEngineServiceServer
 // for forward compatibility
 type EngineServiceServer interface {
+	// Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
+	GetEngineInfo(context.Context, *emptypb.Empty) (*GetEngineInfoResponse, error)
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error)
 	// Get a running Kurtosis Enclave
@@ -92,6 +105,9 @@ type EngineServiceServer interface {
 type UnimplementedEngineServiceServer struct {
 }
 
+func (UnimplementedEngineServiceServer) GetEngineInfo(context.Context, *emptypb.Empty) (*GetEngineInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEngineInfo not implemented")
+}
 func (UnimplementedEngineServiceServer) CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnclave not implemented")
 }
@@ -115,6 +131,24 @@ type UnsafeEngineServiceServer interface {
 
 func RegisterEngineServiceServer(s grpc.ServiceRegistrar, srv EngineServiceServer) {
 	s.RegisterService(&EngineService_ServiceDesc, srv)
+}
+
+func _EngineService_GetEngineInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetEngineInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetEngineInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetEngineInfo(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _EngineService_CreateEnclave_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -196,6 +230,10 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "engine_api.EngineService",
 	HandlerType: (*EngineServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetEngineInfo",
+			Handler:    _EngineService_GetEngineInfo_Handler,
+		},
 		{
 			MethodName: "CreateEnclave",
 			Handler:    _EngineService_CreateEnclave_Handler,
