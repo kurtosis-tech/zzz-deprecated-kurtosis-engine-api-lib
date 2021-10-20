@@ -4,6 +4,13 @@
 * Added `EnclaveContext` object to store Kurtosis Enclave information like network ID and the API container context
 * Added `KurtosisContext` which is a low level API created for simplify `Kurtosis Engine Server` users interaction
 
+# 0.5.0
+### Features
+* Added the `GetEnclaves` call, which returns more detailed information about an enclave
+
+### Breaking Changes
+* Removed the `GetEnclave` function and replaced it with `GetEnclaves`
+
 # 0.4.2
 ### Features
 * Added own version constants, so client code can tell what version of this library it's using
