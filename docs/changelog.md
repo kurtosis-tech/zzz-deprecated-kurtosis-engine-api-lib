@@ -1,4 +1,9 @@
 # TBD
+### Features
+* Added the `GetEnclaves` call, which returns more detailed information about an enclave
+
+### Breaking Changes
+* Removed the `GetEnclave` function and replaced it with `GetEnclaves`
 
 # 0.4.2
 ### Features
