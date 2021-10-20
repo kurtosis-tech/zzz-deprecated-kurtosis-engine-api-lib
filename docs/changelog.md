@@ -1,4 +1,6 @@
 # TBD
+### Features
+* Added a `GetEngineInfo` endpoint, for a) getting engine API version and b) checking that the engine is available
 
 # 0.4.0
 ### Fixes
