@@ -1,4 +1,6 @@
 # TBD
+
+# 0.4.0
 ### Fixes
 * Changed the Go `ListenPort` constant to be a `uint16`, rather than an `int`, because ports can be neither negative nor greater than 2 ^ 16
 * Made the package name containing the RPC API consts match the same format as the `_bindings` package
