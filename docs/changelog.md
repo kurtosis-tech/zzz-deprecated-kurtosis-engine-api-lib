@@ -1,4 +1,6 @@
 # TBD
+
+# 0.7.0
 ### Features
 * Added `KurtosisContext.StopEnclave`
 * All Go `KurtosisContext` methods now accept a `Context`
