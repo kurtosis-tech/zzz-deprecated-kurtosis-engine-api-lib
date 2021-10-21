@@ -20,6 +20,8 @@ type KurtosisContext struct {
 	client kurtosis_engine_rpc_api_bindings.EngineServiceClient
 }
 
+// NewKurtosisContextFromLocalEngine
+// Attempts to create a KurtosisContext connected to a Kurtosis engine running locally
 func NewKurtosisContextFromLocalEngine() (*KurtosisContext, error) {
 	kurtosisEngineSocketStr := fmt.Sprintf("%v:%v", localHostIPAddressStr, kurtosis_engine_rpc_api_consts.ListenPort)
 
@@ -43,11 +45,13 @@ func NewKurtosisContextFromLocalEngine() (*KurtosisContext, error) {
 }
 
 func (kurtosisCtx *KurtosisContext) CreateEnclave(
-		enclaveId string,
-		apiContainerImage string,
-		apiContainerLogLevel string,
-		isPartitioningEnabled bool,
-		shouldPublishPorts bool) (*enclave_context.EnclaveContext, error) {
+	ctx context.Context,
+	enclaveId string,
+	apiContainerImage string,
+	apiContainerLogLevel string,
+	isPartitioningEnabled bool,
+	shouldPublishPorts bool,
+) (*enclave_context.EnclaveContext, error) {
 
 	createEnclaveArgs := &kurtosis_engine_rpc_api_bindings.CreateEnclaveArgs{
 		EnclaveId: enclaveId,
@@ -57,7 +61,7 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 		ShouldPublishAllPorts: shouldPublishPorts,
 	}
 
-	response, err := kurtosisCtx.client.CreateEnclave(context.Background(), createEnclaveArgs)
+	response, err := kurtosisCtx.client.CreateEnclave(ctx, createEnclaveArgs)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v'", enclaveId)
 	}
@@ -67,9 +71,9 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	return enclaveContext, nil
 }
 
-func (kurtosisCtx *KurtosisContext) GetEnclaves() (map[string]*enclave_context.EnclaveContext, error) {
+func (kurtosisCtx *KurtosisContext) GetEnclaves(ctx context.Context) (map[string]*enclave_context.EnclaveContext, error) {
 
-	response, err := kurtosisCtx.client.GetEnclaves(context.Background(), &emptypb.Empty{})
+	response, err := kurtosisCtx.client.GetEnclaves(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil,
 		stacktrace.Propagate(
@@ -82,12 +86,22 @@ func (kurtosisCtx *KurtosisContext) GetEnclaves() (map[string]*enclave_context.E
 	return enclavesMap, nil
 }
 
-func (kurtosisCtx *KurtosisContext) DestroyEnclave(enclaveId string) error {
+func (kurtosisCtx *KurtosisContext) StopEnclave(ctx context.Context, enclaveId string) error {
+	stopEnclaveArgs := &kurtosis_engine_rpc_api_bindings.StopEnclaveArgs{EnclaveId: enclaveId}
+
+	if _, err := kurtosisCtx.client.StopEnclave(ctx, stopEnclaveArgs); err != nil {
+		return stacktrace.Propagate(err, "An error occurred stopping enclave with ID '%v'", enclaveId)
+	}
+
+	return nil
+}
+
+func (kurtosisCtx *KurtosisContext) DestroyEnclave(ctx context.Context, enclaveId string) error {
 	destroyEnclaveArgs := &kurtosis_engine_rpc_api_bindings.DestroyEnclaveArgs{
 		EnclaveId: enclaveId,
 	}
 
-	if _, err := kurtosisCtx.client.DestroyEnclave(context.Background(), destroyEnclaveArgs); err != nil {
+	if _, err := kurtosisCtx.client.DestroyEnclave(ctx, destroyEnclaveArgs); err != nil {
 		return stacktrace.Propagate(err, "An error occurred destroying enclave with ID '%v'", enclaveId)
 	}
 
@@ -101,12 +115,9 @@ func newEnclaveContextMapFromEnclaveInfoMap(
 		enclaveInfoMap map[string]*kurtosis_engine_rpc_api_bindings.EnclaveInfo,
 		) map[string]*enclave_context.EnclaveContext {
 
-	var enclaveContextMap map[string]*enclave_context.EnclaveContext
-
+	enclaveContextMap := map[string]*enclave_context.EnclaveContext{}
 	for enclaveId, enclaveInfo := range enclaveInfoMap {
-
 		enclaveContext := newEnclaveContextFromEnclaveInfo(enclaveInfo)
-
 		enclaveContextMap[enclaveId] = enclaveContext
 	}
 
