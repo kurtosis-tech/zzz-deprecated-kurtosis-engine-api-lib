@@ -5,6 +5,7 @@
 
 ### Fixes
 * Fixed panic that would happen when getting enclave info
+* Exports `KurtosisContext`, `EnclaveContext`, and `ApiContainerContext` from the Typescript library
 
 ### Breaking Changes
 * All `KurtosisContext` methods in the Go library accept a `Context`
