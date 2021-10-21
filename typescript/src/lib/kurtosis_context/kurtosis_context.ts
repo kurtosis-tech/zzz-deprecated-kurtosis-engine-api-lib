@@ -3,11 +3,11 @@ import { LISTEN_PORT} from "../../kurtosis_engine_rpc_api_consts/kurtosis_engine
 import {EnclaveContext} from "../enclave_context/enclave_context";
 import * as grpc from "grpc";
 import { Result, err, ok } from "neverthrow";
-import {newCreateEnclaveArgs, newDestroyEnclaveArgs} from "../constructor_calls";
+import {newCreateEnclaveArgs, newDestroyEnclaveArgs, newStopEnclaveArgs} from "../constructor_calls";
 import {
     CreateEnclaveArgs,
     CreateEnclaveResponse, DestroyEnclaveArgs, EnclaveAPIContainerInfo, EnclaveAPIContainerStatusMap,
-    EnclaveInfo, GetEnclavesResponse
+    EnclaveInfo, GetEnclavesResponse, StopEnclaveArgs
 } from "../../kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import {ApiContainerContext} from "../api_container_context/api_container_context";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
@@ -116,6 +116,26 @@ export class KurtosisContext {
         const enclavesMap: Map<string, EnclaveContext> = this.newEnclaveContextMapFromEnclaveInfoMap(response.getEnclaveInfoMap())
 
         return ok(enclavesMap)
+    }
+
+    public async stopEnclave(enclaveId: string): Promise<Result<null, Error>> {
+        const args: StopEnclaveArgs = newStopEnclaveArgs(enclaveId)
+
+        const stopEnclavePromise: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
+            this.client.stopEnclave(args, (error: Error | null, _unusedResponse?: google_protobuf_empty_pb.Empty) => {
+                if (error === null) {
+                    resolve(ok(null));
+                } else {
+                    resolve(err(error));
+                }
+            })
+        });
+        const stopEnclaveResult: Result<null, Error> = await stopEnclavePromise;
+        if (!stopEnclaveResult.isOk()) {
+            return err(stopEnclaveResult.error);
+        }
+
+        return ok(null);
     }
 
     public async destroyEnclave(enclaveId: string): Promise<Result<null, Error>> {
