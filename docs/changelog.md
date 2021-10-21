@@ -1,4 +1,6 @@
 # TBD
+### Fixes
+* Remove unneeded Kurt Core dependency
 
 # 0.7.0
 ### Features
