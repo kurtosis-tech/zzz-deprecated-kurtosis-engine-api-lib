@@ -120,16 +120,12 @@ func newEnclaveContextFromEnclaveInfo(
 
 	var apiContainerContext *api_container_context.APIContainerContext
 
-	nonExistentApiContainerStatus := kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_NONEXISTENT
-
-	if enclaveInfo.GetApiContainerStatus() != nonExistentApiContainerStatus && apiContainerInfo != nil {
-		apiContainerContext = api_container_context.NewAPIContainerContext(
-			enclaveInfo.ApiContainerInfo.GetContainerId(),
-			enclaveInfo.ApiContainerInfo.GetIpInsideEnclave(),
-			enclaveInfo.ApiContainerInfo.GetPortInsideEnclave(),
-			enclaveInfo.ApiContainerInfo.GetIpOnHostMachine(),
-			enclaveInfo.ApiContainerInfo.GetPortOnHostMachine())
-	}
+	apiContainerContext = api_container_context.NewAPIContainerContext(
+		apiContainerInfo.GetContainerId(),
+		apiContainerInfo.GetIpInsideEnclave(),
+		apiContainerInfo.GetPortInsideEnclave(),
+		apiContainerInfo.GetIpOnHostMachine(),
+		apiContainerInfo.GetPortOnHostMachine())
 
 	enclaveContext := enclave_context.NewEnclaveContext(
 		enclaveInfo.GetEnclaveId(),

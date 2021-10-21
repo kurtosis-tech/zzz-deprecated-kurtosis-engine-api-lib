@@ -10,7 +10,7 @@ export function newCreateEnclaveArgs(
         apiContainerLogLevel: string,
         isPartitioningEnabled: boolean,
         shouldPublishPorts: boolean): CreateEnclaveArgs {
-    let result: CreateEnclaveArgs = new CreateEnclaveArgs();
+    const result: CreateEnclaveArgs = new CreateEnclaveArgs();
     result.setEnclaveId(enclaveId);
     result.setApiContainerImage(apiContainerImage);
     result.setApiContainerLogLevel(apiContainerLogLevel);
@@ -21,7 +21,7 @@ export function newCreateEnclaveArgs(
 }
 
 export function newDestroyEnclaveArgs(enclaveId:string): DestroyEnclaveArgs {
-    let result: DestroyEnclaveArgs = new DestroyEnclaveArgs();
+    const result: DestroyEnclaveArgs = new DestroyEnclaveArgs();
     result.setEnclaveId(enclaveId);
 
     return result;

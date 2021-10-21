@@ -9,7 +9,7 @@ import {
     CreateEnclaveResponse, DestroyEnclaveArgs, EnclaveAPIContainerInfo, EnclaveAPIContainerStatusMap,
     EnclaveInfo, GetEnclavesResponse
 } from "../../kurtosis_engine_rpc_api_bindings/engine_service_pb";
-import {APIContainerContext} from "../api_container_context/api_container_context";
+import {ApiContainerContext} from "../api_container_context/api_container_context";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as jspb from "google-protobuf";
 
@@ -22,8 +22,8 @@ export class KurtosisContext {
         this.client = client;
     }
 
-    public newKurtosisContextFromLocalEngine(): Result<KurtosisContext, Error>{
-        let kurtosisEngineSocketStr: string = LOCAL_HOST_IP_ADDRESS_STR + LISTEN_PORT;
+    public static newKurtosisContextFromLocalEngine(): Result<KurtosisContext, Error>{
+        const kurtosisEngineSocketStr: string = `${LOCAL_HOST_IP_ADDRESS_STR}:${LISTEN_PORT}`;
 
         let engineServiceClient: EngineServiceClient;
         // TODO SECURITY: Use HTTPS to ensure we're connecting to the real Kurtosis API servers
@@ -38,7 +38,7 @@ export class KurtosisContext {
             ));
         }
 
-        let kurtosisContext: KurtosisContext = new KurtosisContext(engineServiceClient);
+        const kurtosisContext: KurtosisContext = new KurtosisContext(engineServiceClient);
 
         return ok(kurtosisContext);
     }
@@ -50,14 +50,14 @@ export class KurtosisContext {
         isPartitioningEnabled: boolean,
         shouldPublishPorts: boolean): Promise<Result<EnclaveContext, Error>> {
 
-        let args: CreateEnclaveArgs = newCreateEnclaveArgs(
+        const args: CreateEnclaveArgs = newCreateEnclaveArgs(
             enclaveId,
             apiContainerImage,
             apiContainerLogLevel,
             isPartitioningEnabled,
             shouldPublishPorts)
 
-        let promiseCreateEnclave: Promise<Result<CreateEnclaveResponse, Error>> = new Promise((resolve, _unusedReject) => {
+        const createEnclavePromise: Promise<Result<CreateEnclaveResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.createEnclave(args, (error: grpc.ServiceError | null, response?: CreateEnclaveResponse) => {
                 if (error === null) {
                     if (!response) {
@@ -71,30 +71,27 @@ export class KurtosisContext {
             })
         });
 
-        let resultCreateEnclave: Result<CreateEnclaveResponse, Error> = await promiseCreateEnclave;
-        if (!resultCreateEnclave.isOk()) {
-            return err(resultCreateEnclave.error)
+        const createEnclaveResult: Result<CreateEnclaveResponse, Error> = await createEnclavePromise;
+        if (!createEnclaveResult.isOk()) {
+            return err(createEnclaveResult.error)
         }
 
-        let response: CreateEnclaveResponse = resultCreateEnclave.value;
+        const response: CreateEnclaveResponse = createEnclaveResult.value;
 
-        let enclaveInfo: EnclaveInfo | undefined = response.getEnclaveInfo();
-        let enclaveContext: EnclaveContext
-
-        if (enclaveInfo instanceof EnclaveInfo) {
-            enclaveContext = this.newEnclaveContextFromEnclaveInfo(enclaveInfo);
-        } else {
-            return err(new Error("An error occurred creating enclave with ID " + enclaveId + " enclaveInfo is undefined; this is a bug on this library" ))
+        const enclaveInfo: EnclaveInfo | undefined = response.getEnclaveInfo();
+        if (enclaveInfo === undefined) {
+            err(new Error("An error occurred creating enclave with ID " + enclaveId + " enclaveInfo is undefined; this is a bug on this library" ))
         }
+        const enclaveContext = this.newEnclaveContextFromEnclaveInfo(<EnclaveInfo>enclaveInfo);
 
         return ok(enclaveContext);
     }
 
     public async getEnclaves(): Promise<Result<Map<string, EnclaveContext>, Error>>{
 
-        let emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
+        const emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
 
-        let promiseGetEnclaves: Promise<Result<GetEnclavesResponse, Error>> = new Promise((resolve, _unusedReject) => {
+        const getEnclavesPromise: Promise<Result<GetEnclavesResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.getEnclaves(emptyArg, (error: grpc.ServiceError | null, response?: GetEnclavesResponse) => {
                 if (error === null) {
                     if (!response) {
@@ -108,14 +105,14 @@ export class KurtosisContext {
             })
         });
 
-        let resultGetEnclaves: Result<GetEnclavesResponse, Error> = await promiseGetEnclaves;
-        if (!resultGetEnclaves.isOk()) {
-            return err(resultGetEnclaves.error)
+        const getEnclavesResult: Result<GetEnclavesResponse, Error> = await getEnclavesPromise;
+        if (!getEnclavesResult.isOk()) {
+            return err(getEnclavesResult.error)
         }
 
-        let response: GetEnclavesResponse = resultGetEnclaves.value;
+        const response: GetEnclavesResponse = getEnclavesResult.value;
 
-        let enclavesMap: Map<string, EnclaveContext> = this.newEnclaveContextMapFromEnclaveInfoMap(response.getEnclaveInfoMap())
+        const enclavesMap: Map<string, EnclaveContext> = this.newEnclaveContextMapFromEnclaveInfoMap(response.getEnclaveInfoMap())
 
         return ok(enclavesMap)
     }
@@ -123,7 +120,7 @@ export class KurtosisContext {
     public async destroyEnclave(enclaveId: string): Promise<Result<null, Error>> {
         const args: DestroyEnclaveArgs = newDestroyEnclaveArgs(enclaveId);
 
-        const promiseDestroyEnclave: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
+        const destroyEnclavePromise: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.destroyEnclave(args, (error: Error | null, _unusedResponse?: google_protobuf_empty_pb.Empty) => {
                 if (error === null) {
                     resolve(ok(null));
@@ -132,9 +129,9 @@ export class KurtosisContext {
                 }
             })
         });
-        const resultDestroyEnclave: Result<null, Error> = await promiseDestroyEnclave;
-        if (!resultDestroyEnclave.isOk()) {
-            return err(resultDestroyEnclave.error);
+        const destroyEnclaveResult: Result<null, Error> = await destroyEnclavePromise;
+        if (!destroyEnclaveResult.isOk()) {
+            return err(destroyEnclaveResult.error);
         }
 
         return ok(null);
@@ -145,10 +142,10 @@ export class KurtosisContext {
     // ====================================================================================================
     private newEnclaveContextMapFromEnclaveInfoMap(enclaveInfoMap: jspb.Map<string, EnclaveInfo>): Map<string, EnclaveContext> {
 
-        let enclaveContextMap: Map<string, EnclaveContext> = new Map<string, EnclaveContext>()
+        const enclaveContextMap: Map<string, EnclaveContext> = new Map<string, EnclaveContext>()
 
         enclaveInfoMap.forEach((value: EnclaveInfo, key: string) => {
-            let enclaveContext: EnclaveContext = this.newEnclaveContextFromEnclaveInfo(value);
+            const enclaveContext: EnclaveContext = this.newEnclaveContextFromEnclaveInfo(value);
             enclaveContextMap.set(key,enclaveContext);
         });
 
@@ -157,13 +154,13 @@ export class KurtosisContext {
 
     private newEnclaveContextFromEnclaveInfo(enclaveInfo: EnclaveInfo): EnclaveContext {
 
-        let apiContainerInfo: EnclaveAPIContainerInfo | undefined = enclaveInfo.getApiContainerInfo();
-        let apiContainerContext: APIContainerContext | undefined = undefined;
+        const apiContainerInfo: EnclaveAPIContainerInfo | undefined = enclaveInfo.getApiContainerInfo();
+        let apiContainerContext: ApiContainerContext | undefined = undefined;
 
         let nonExistentApiContainerStatus: number = 0;
 
-        if (enclaveInfo.getApiContainerStatus() != nonExistentApiContainerStatus && apiContainerInfo !== undefined) {
-            apiContainerContext = new APIContainerContext(
+        if (apiContainerInfo !== undefined) {
+            apiContainerContext = new ApiContainerContext(
                 apiContainerInfo.getContainerId(),
                 apiContainerInfo.getIpInsideEnclave(),
                 apiContainerInfo.getPortInsideEnclave(),
@@ -172,7 +169,7 @@ export class KurtosisContext {
             )
         }
 
-        let enclaveContext: EnclaveContext = new EnclaveContext(
+        const enclaveContext: EnclaveContext = new EnclaveContext(
             enclaveInfo.getEnclaveId(),
             enclaveInfo.getNetworkId(),
             enclaveInfo.getNetworkCidr(),

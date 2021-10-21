@@ -12,24 +12,24 @@ func NewAPIContainerContext(containerID string, ipInsideEnclave string, portInsi
 	return &APIContainerContext{containerID: containerID, ipInsideEnclave: ipInsideEnclave, portInsideEnclave: portInsideEnclave, ipOnHostMachine: ipOnHostMachine, portOnHostMachine: portOnHostMachine}
 }
 
-func (A APIContainerContext) GetContainerID() string {
-	return A.containerID
+func (apiContext APIContainerContext) GetContainerID() string {
+	return apiContext.containerID
 }
 
-func (A APIContainerContext) GetIpInsideEnclave() string {
-	return A.ipInsideEnclave
+func (apiContext APIContainerContext) GetIPInsideEnclave() string {
+	return apiContext.ipInsideEnclave
 }
 
-func (A APIContainerContext) GetPortInsideEnclave() uint32 {
-	return A.portInsideEnclave
+func (apiContext APIContainerContext) GetPortInsideEnclave() uint32 {
+	return apiContext.portInsideEnclave
 }
 
-func (A APIContainerContext) GetIpOnHostMachine() string {
-	return A.ipOnHostMachine
+func (apiContext APIContainerContext) GetIPOnHostMachine() string {
+	return apiContext.ipOnHostMachine
 }
 
-func (A APIContainerContext) GetPortOnHostMachine() uint32 {
-	return A.portOnHostMachine
+func (apiContext APIContainerContext) GetPortOnHostMachine() uint32 {
+	return apiContext.portOnHostMachine
 }
 
 
