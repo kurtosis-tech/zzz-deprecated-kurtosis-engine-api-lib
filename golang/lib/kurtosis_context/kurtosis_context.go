@@ -62,17 +62,7 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v'", enclaveId)
 	}
 
-	/*apiContainerContext := api_container_context.NewAPIContainerContext(
-		response.ApiContainerId,
-		response.ApiContainerIpInsideNetwork,
-		response.ApiContainerHostIp,
-		response.ApiContainerHostPort)
-
-	enclaveContext := enclave_context.NewEnclaveContext(
-		enclaveId,
-		response.NetworkId,
-		response.NetworkCidr,
-		apiContainerContext)*/
+	enclaveContext := newEnclaveContextFromEnclaveInfo(response.EnclaveInfo)
 
 	return enclaveContext, nil
 }
@@ -87,7 +77,7 @@ func (kurtosisCtx *KurtosisContext) GetEnclaves(enclaveId string) (map[string]*e
 			"An error occurred getting an enclave with ID '%v'", enclaveId)
 	}
 
-	enclavesMap := getEnclaveContextMapFromEnclaveInfoMap(response.EnclaveInfo)
+	enclavesMap := newEnclaveContextMapFromEnclaveInfoMap(response.EnclaveInfo)
 
 	return enclavesMap, nil
 }
@@ -107,33 +97,41 @@ func (kurtosisCtx *KurtosisContext) DestroyEnclave(enclaveId string) error {
 // ====================================================================================================
 // 									   Private helper methods
 // ====================================================================================================
-func getEnclaveContextMapFromEnclaveInfoMap(
-	enclaveInfoMap map[string]*kurtosis_engine_rpc_api_bindings.EnclaveInfo) map[string]*enclave_context.EnclaveContext {
+func newEnclaveContextMapFromEnclaveInfoMap(
+		enclaveInfoMap map[string]*kurtosis_engine_rpc_api_bindings.EnclaveInfo,
+		) map[string]*enclave_context.EnclaveContext {
 
 	var enclaveContextMap map[string]*enclave_context.EnclaveContext
 
 	for enclaveId, enclaveInfo := range enclaveInfoMap {
 
-		var apiContainerContext *api_container_context.APIContainerContext
-
-		if enclaveInfo.GetApiContainerStatus() != kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_NONEXISTENT {
-			apiContainerContext = api_container_context.NewAPIContainerContext(
-				enclaveInfo.ApiContainerInfo.ContainerId,
-				enclaveInfo.ApiContainerInfo.IpInsideEnclave,
-				enclaveInfo.ApiContainerInfo.PortInsideEnclave,
-				enclaveInfo.ApiContainerInfo.IpOnHostMachine,
-				enclaveInfo.ApiContainerInfo.PortOnHostMachine)
-		}
-
-		enclaveContext := enclave_context.NewEnclaveContext(
-			enclaveInfo.EnclaveId,
-			enclaveInfo.NetworkId,
-			enclaveInfo.NetworkCidr,
-			apiContainerContext,
-		)
+		enclaveContext := newEnclaveContextFromEnclaveInfo(enclaveInfo)
 
 		enclaveContextMap[enclaveId] = enclaveContext
 	}
 
 	return enclaveContextMap
+}
+
+func newEnclaveContextFromEnclaveInfo(
+		enclaveInfo *kurtosis_engine_rpc_api_bindings.EnclaveInfo) *enclave_context.EnclaveContext {
+
+	var apiContainerContext *api_container_context.APIContainerContext
+
+	if enclaveInfo.GetApiContainerStatus() != kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_NONEXISTENT {
+		apiContainerContext = api_container_context.NewAPIContainerContext(
+			enclaveInfo.ApiContainerInfo.ContainerId,
+			enclaveInfo.ApiContainerInfo.IpInsideEnclave,
+			enclaveInfo.ApiContainerInfo.PortInsideEnclave,
+			enclaveInfo.ApiContainerInfo.IpOnHostMachine,
+			enclaveInfo.ApiContainerInfo.PortOnHostMachine)
+	}
+
+	enclaveContext := enclave_context.NewEnclaveContext(
+		enclaveInfo.EnclaveId,
+		enclaveInfo.NetworkId,
+		enclaveInfo.NetworkCidr,
+		apiContainerContext,
+	)
+	return enclaveContext
 }
