@@ -44,18 +44,8 @@ message CreateEnclaveArgs {
 }
 
 message CreateEnclaveResponse {
-  //The Docker network id that is part of the Kurtosis Enclave
-  string network_id = 1;
-  //The Docker network CIDR
-  string network_cidr = 2;
-  //The API container ID that is currently running in the Kurtosis Enclave
-  string api_container_id = 3;
-  //The IP of the interface on the host machine where the API container's port can be accessed
-  string api_container_ip_inside_network = 4;
-  //The API container Host IP address
-  string api_container_host_ip = 5;
-  //The port number on the host machine where the API container can be reached
-  string api_container_host_port = 6;
+  //All the enclave information inside this object
+  EnclaveInfo enclave_info = 1;
 }
 
 // ==============================================================================================
@@ -74,7 +64,7 @@ enum EnclaveContainersStatus {
   EnclaveContainersStatus_STOPPED = 2;
 }
 
-// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum valuee uniqueness works
+// NOTE: We have to prefix the enum values with the enum name due to the way Protobuf enum value uniqueness works
 enum EnclaveAPIContainerStatus {
   // No API container exists in the enclave
   // This is the only valid value when the enclave containers status is "EMPTY"
