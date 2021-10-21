@@ -1,4 +1,14 @@
 # TBD
+### Features
+* Added `APIContainerContext` object to store API container data like ip address and host's ip address
+* Added `EnclaveContext` object to store Kurtosis Enclave information like network ID and the API container context
+* Added `KurtosisContext` which is a high level API created for simplify `Kurtosis Engine Server` users interaction
+* Added `KurtosisContext.CreateEnclave` method in Golang and Typescript libraries to create new Kurtosis Enclaves
+* Added `KurtosisContext.GetEnclaves` method in Golang and Typescript libraries to get a Map of running Kurtosis Enclaves
+* Added `KurtosisContext.DestroyEnclave` method in Golang and Typescript libraries to destroy a Kurtosis Enclave
+
+### Breaking Changes
+* Updated `CreateEnclaveResponse` in order to reuse the `EnclaveInfo` object that is used in `GetEnclavesResponse`
 
 # 0.5.0
 ### Features

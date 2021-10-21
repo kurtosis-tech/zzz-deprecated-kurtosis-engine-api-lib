@@ -61,23 +61,10 @@ export namespace CreateEnclaveArgs {
 }
 
 export class CreateEnclaveResponse extends jspb.Message {
-  getNetworkId(): string;
-  setNetworkId(value: string): void;
-
-  getNetworkCidr(): string;
-  setNetworkCidr(value: string): void;
-
-  getApiContainerId(): string;
-  setApiContainerId(value: string): void;
-
-  getApiContainerIpInsideNetwork(): string;
-  setApiContainerIpInsideNetwork(value: string): void;
-
-  getApiContainerHostIp(): string;
-  setApiContainerHostIp(value: string): void;
-
-  getApiContainerHostPort(): string;
-  setApiContainerHostPort(value: string): void;
+  hasEnclaveInfo(): boolean;
+  clearEnclaveInfo(): void;
+  getEnclaveInfo(): EnclaveInfo | undefined;
+  setEnclaveInfo(value?: EnclaveInfo): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateEnclaveResponse.AsObject;
@@ -91,12 +78,7 @@ export class CreateEnclaveResponse extends jspb.Message {
 
 export namespace CreateEnclaveResponse {
   export type AsObject = {
-    networkId: string,
-    networkCidr: string,
-    apiContainerId: string,
-    apiContainerIpInsideNetwork: string,
-    apiContainerHostIp: string,
-    apiContainerHostPort: string,
+    enclaveInfo?: EnclaveInfo.AsObject,
   }
 }
 
