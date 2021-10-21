@@ -27,6 +27,7 @@ func (e EnclaveContext) GetNetworkCIDR() string {
 	return e.networkCIDR
 }
 
+// This may be nil if no API container exists inside the enclave
 func (e EnclaveContext) GetApiContainerContext() *api_container_context.APIContainerContext {
 	return e.apiContainerContext
 }

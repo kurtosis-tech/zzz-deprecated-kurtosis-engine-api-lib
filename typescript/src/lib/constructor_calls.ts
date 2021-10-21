@@ -2,7 +2,7 @@
 // //                                    Kurtosis Context
 // // ====================================================================================================
 
-import {CreateEnclaveArgs, DestroyEnclaveArgs} from "../kurtosis_engine_rpc_api_bindings/engine_service_pb";
+import {CreateEnclaveArgs, DestroyEnclaveArgs, StopEnclaveArgs} from "../kurtosis_engine_rpc_api_bindings/engine_service_pb";
 
 export function newCreateEnclaveArgs(
         enclaveId: string,
@@ -20,9 +20,14 @@ export function newCreateEnclaveArgs(
     return result;
 }
 
+export function newStopEnclaveArgs(enclaveId:string): DestroyEnclaveArgs {
+    const result: StopEnclaveArgs = new StopEnclaveArgs();
+    result.setEnclaveId(enclaveId);
+    return result;
+}
+
 export function newDestroyEnclaveArgs(enclaveId:string): DestroyEnclaveArgs {
     const result: DestroyEnclaveArgs = new DestroyEnclaveArgs();
     result.setEnclaveId(enclaveId);
-
     return result;
 }

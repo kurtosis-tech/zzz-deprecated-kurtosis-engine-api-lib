@@ -25,6 +25,7 @@ export class EnclaveContext {
         return this.networkCidr;
     }
 
+    // This may be undefined if no API container exists inside the enclave
     public getApiContainerContext(): ApiContainerContext | undefined {
         return this.apiContainerContext;
     }
