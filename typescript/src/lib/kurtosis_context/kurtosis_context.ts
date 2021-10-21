@@ -22,6 +22,7 @@ export class KurtosisContext {
         this.client = client;
     }
 
+    // Attempts to create a KurtosisContext connected to a Kurtosis engine running locally
     public static newKurtosisContextFromLocalEngine(): Result<KurtosisContext, Error>{
         const kurtosisEngineSocketStr: string = `${LOCAL_HOST_IP_ADDRESS_STR}:${LISTEN_PORT}`;
 
