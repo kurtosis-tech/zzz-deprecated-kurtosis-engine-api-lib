@@ -67,14 +67,14 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	return enclaveContext, nil
 }
 
-func (kurtosisCtx *KurtosisContext) GetEnclaves(enclaveId string) (map[string]*enclave_context.EnclaveContext, error) {
+func (kurtosisCtx *KurtosisContext) GetEnclaves() (map[string]*enclave_context.EnclaveContext, error) {
 
 	response, err := kurtosisCtx.client.GetEnclaves(context.Background(), &emptypb.Empty{})
 	if err != nil {
 		return nil,
 		stacktrace.Propagate(
 			err,
-			"An error occurred getting an enclave with ID '%v'", enclaveId)
+			"An error occurred getting enclaves")
 	}
 
 	enclavesMap := newEnclaveContextMapFromEnclaveInfoMap(response.EnclaveInfo)
@@ -116,21 +116,25 @@ func newEnclaveContextMapFromEnclaveInfoMap(
 func newEnclaveContextFromEnclaveInfo(
 		enclaveInfo *kurtosis_engine_rpc_api_bindings.EnclaveInfo) *enclave_context.EnclaveContext {
 
+	apiContainerInfo := enclaveInfo.GetApiContainerInfo()
+
 	var apiContainerContext *api_container_context.APIContainerContext
 
-	if enclaveInfo.GetApiContainerStatus() != kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_NONEXISTENT {
+	nonExistentApiContainerStatus := kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_NONEXISTENT
+
+	if enclaveInfo.GetApiContainerStatus() != nonExistentApiContainerStatus && apiContainerInfo != nil {
 		apiContainerContext = api_container_context.NewAPIContainerContext(
-			enclaveInfo.ApiContainerInfo.ContainerId,
-			enclaveInfo.ApiContainerInfo.IpInsideEnclave,
-			enclaveInfo.ApiContainerInfo.PortInsideEnclave,
-			enclaveInfo.ApiContainerInfo.IpOnHostMachine,
-			enclaveInfo.ApiContainerInfo.PortOnHostMachine)
+			enclaveInfo.ApiContainerInfo.GetContainerId(),
+			enclaveInfo.ApiContainerInfo.GetIpInsideEnclave(),
+			enclaveInfo.ApiContainerInfo.GetPortInsideEnclave(),
+			enclaveInfo.ApiContainerInfo.GetIpOnHostMachine(),
+			enclaveInfo.ApiContainerInfo.GetPortOnHostMachine())
 	}
 
 	enclaveContext := enclave_context.NewEnclaveContext(
-		enclaveInfo.EnclaveId,
-		enclaveInfo.NetworkId,
-		enclaveInfo.NetworkCidr,
+		enclaveInfo.GetEnclaveId(),
+		enclaveInfo.GetNetworkId(),
+		enclaveInfo.GetNetworkCidr(),
 		apiContainerContext,
 	)
 	return enclaveContext

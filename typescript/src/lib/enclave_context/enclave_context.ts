@@ -1,31 +1,31 @@
 import {APIContainerContext} from "../api_container_context/api_container_context";
 
 export class EnclaveContext {
-    private readonly _enclaveID: string;
-    private readonly _networkID: string;
-    private readonly _networkCIDR: string;
-    private readonly _apiContainerContext: APIContainerContext;
+    private readonly enclaveID: string;
+    private readonly networkID: string;
+    private readonly networkCIDR: string;
+    private readonly apiContainerContext: APIContainerContext | undefined;
 
-    constructor(enclaveID: string, networkID: string, networkCIDR: string, apiContainerContext: APIContainerContext) {
-        this._enclaveID = enclaveID;
-        this._networkID = networkID;
-        this._networkCIDR = networkCIDR;
-        this._apiContainerContext = apiContainerContext;
+    constructor(enclaveID: string, networkID: string, networkCIDR: string, apiContainerContext: APIContainerContext | undefined) {
+        this.enclaveID = enclaveID;
+        this.networkID = networkID;
+        this.networkCIDR = networkCIDR;
+        this.apiContainerContext = apiContainerContext;
     }
 
     public getEnclaveID(): string {
-        return this._enclaveID;
+        return this.enclaveID;
     }
 
     public getNetworkID(): string {
-        return this._networkID;
+        return this.networkID;
     }
 
     public getNetworkCIDR(): string {
-        return this._networkCIDR;
+        return this.networkCIDR;
     }
 
-    public getApiContainerContext(): APIContainerContext {
-        return this._apiContainerContext;
+    public getApiContainerContext(): APIContainerContext | undefined {
+        return this.apiContainerContext;
     }
 }
