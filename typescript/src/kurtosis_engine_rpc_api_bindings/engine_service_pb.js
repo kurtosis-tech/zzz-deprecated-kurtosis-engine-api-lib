@@ -607,12 +607,7 @@ proto.engine_api.CreateEnclaveResponse.prototype.toObject = function(opt_include
  */
 proto.engine_api.CreateEnclaveResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    networkId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    networkCidr: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    apiContainerId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    apiContainerIpInsideNetwork: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    apiContainerHostIp: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    apiContainerHostPort: jspb.Message.getFieldWithDefault(msg, 6, "")
+    enclaveInfo: (f = msg.getEnclaveInfo()) && proto.engine_api.EnclaveInfo.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -650,28 +645,9 @@ proto.engine_api.CreateEnclaveResponse.deserializeBinaryFromReader = function(ms
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNetworkId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNetworkCidr(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setApiContainerId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setApiContainerIpInsideNetwork(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setApiContainerHostIp(value);
-      break;
-    case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setApiContainerHostPort(value);
+      var value = new proto.engine_api.EnclaveInfo;
+      reader.readMessage(value,proto.engine_api.EnclaveInfo.deserializeBinaryFromReader);
+      msg.setEnclaveInfo(value);
       break;
     default:
       reader.skipField();
@@ -702,156 +678,51 @@ proto.engine_api.CreateEnclaveResponse.prototype.serializeBinary = function() {
  */
 proto.engine_api.CreateEnclaveResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getNetworkId();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getEnclaveInfo();
+  if (f != null) {
+    writer.writeMessage(
       1,
-      f
-    );
-  }
-  f = message.getNetworkCidr();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getApiContainerId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getApiContainerIpInsideNetwork();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getApiContainerHostIp();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getApiContainerHostPort();
-  if (f.length > 0) {
-    writer.writeString(
-      6,
-      f
+      f,
+      proto.engine_api.EnclaveInfo.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional string network_id = 1;
- * @return {string}
+ * optional EnclaveInfo enclave_info = 1;
+ * @return {?proto.engine_api.EnclaveInfo}
  */
-proto.engine_api.CreateEnclaveResponse.prototype.getNetworkId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.engine_api.CreateEnclaveResponse.prototype.getEnclaveInfo = function() {
+  return /** @type{?proto.engine_api.EnclaveInfo} */ (
+    jspb.Message.getWrapperField(this, proto.engine_api.EnclaveInfo, 1));
 };
 
 
 /**
- * @param {string} value
+ * @param {?proto.engine_api.EnclaveInfo|undefined} value
+ * @return {!proto.engine_api.CreateEnclaveResponse} returns this
+*/
+proto.engine_api.CreateEnclaveResponse.prototype.setEnclaveInfo = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.engine_api.CreateEnclaveResponse} returns this
  */
-proto.engine_api.CreateEnclaveResponse.prototype.setNetworkId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
+proto.engine_api.CreateEnclaveResponse.prototype.clearEnclaveInfo = function() {
+  return this.setEnclaveInfo(undefined);
 };
 
 
 /**
- * optional string network_cidr = 2;
- * @return {string}
+ * Returns whether this field is set.
+ * @return {boolean}
  */
-proto.engine_api.CreateEnclaveResponse.prototype.getNetworkCidr = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.engine_api.CreateEnclaveResponse} returns this
- */
-proto.engine_api.CreateEnclaveResponse.prototype.setNetworkCidr = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string api_container_id = 3;
- * @return {string}
- */
-proto.engine_api.CreateEnclaveResponse.prototype.getApiContainerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.engine_api.CreateEnclaveResponse} returns this
- */
-proto.engine_api.CreateEnclaveResponse.prototype.setApiContainerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional string api_container_ip_inside_network = 4;
- * @return {string}
- */
-proto.engine_api.CreateEnclaveResponse.prototype.getApiContainerIpInsideNetwork = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.engine_api.CreateEnclaveResponse} returns this
- */
-proto.engine_api.CreateEnclaveResponse.prototype.setApiContainerIpInsideNetwork = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string api_container_host_ip = 5;
- * @return {string}
- */
-proto.engine_api.CreateEnclaveResponse.prototype.getApiContainerHostIp = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.engine_api.CreateEnclaveResponse} returns this
- */
-proto.engine_api.CreateEnclaveResponse.prototype.setApiContainerHostIp = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional string api_container_host_port = 6;
- * @return {string}
- */
-proto.engine_api.CreateEnclaveResponse.prototype.getApiContainerHostPort = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.engine_api.CreateEnclaveResponse} returns this
- */
-proto.engine_api.CreateEnclaveResponse.prototype.setApiContainerHostPort = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+proto.engine_api.CreateEnclaveResponse.prototype.hasEnclaveInfo = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
