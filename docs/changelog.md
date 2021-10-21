@@ -1,5 +1,9 @@
 # TBD
 
+# 0.7.1
+### Fixes
+* Remove unneeded Kurt Core dependency
+
 # 0.7.0
 ### Features
 * Added `KurtosisContext.StopEnclave`
