@@ -80,9 +80,9 @@ export class KurtosisContext {
 
         const enclaveInfo: EnclaveInfo | undefined = response.getEnclaveInfo();
         if (enclaveInfo === undefined) {
-            err(new Error("An error occurred creating enclave with ID " + enclaveId + " enclaveInfo is undefined; this is a bug on this library" ))
+            return err(new Error("An error occurred creating enclave with ID " + enclaveId + " enclaveInfo is undefined; this is a bug on this library" ))
         }
-        const enclaveContext = this.newEnclaveContextFromEnclaveInfo(<EnclaveInfo>enclaveInfo);
+        const enclaveContext = this.newEnclaveContextFromEnclaveInfo(enclaveInfo);
 
         return ok(enclaveContext);
     }
