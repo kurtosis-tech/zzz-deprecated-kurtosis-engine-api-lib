@@ -4,9 +4,9 @@ export class EnclaveContext {
     private readonly enclaveId: string;
     private readonly networkId: string;
     private readonly networkCidr: string;
-    private readonly apiContainerContext: ApiContainerContext | undefined;
+    private readonly apiContainerContext: ApiContainerContext;
 
-    constructor(enclaveId: string, networkId: string, networkCidr: string, apiContainerContext: ApiContainerContext | undefined) {
+    constructor(enclaveId: string, networkId: string, networkCidr: string, apiContainerContext: ApiContainerContext) {
         this.enclaveId = enclaveId;
         this.networkId = networkId;
         this.networkCidr = networkCidr;
@@ -25,8 +25,7 @@ export class EnclaveContext {
         return this.networkCidr;
     }
 
-    // This may be undefined if no API container exists inside the enclave
-    public getApiContainerContext(): ApiContainerContext | undefined {
+    public getApiContainerContext(): ApiContainerContext {
         return this.apiContainerContext;
     }
 }

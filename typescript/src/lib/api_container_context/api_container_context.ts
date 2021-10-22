@@ -1,4 +1,5 @@
 
+// TODO Combine this into enclave context, now that enclave contexts can no longer be created if they don't have a valid API container!
 export class ApiContainerContext {
     private readonly containerId:  string
     private readonly ipInsideEnclave: string
