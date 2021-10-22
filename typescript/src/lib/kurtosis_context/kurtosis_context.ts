@@ -2,11 +2,13 @@ import { EngineServiceClient } from "../../kurtosis_engine_rpc_api_bindings/engi
 import { LISTEN_PORT} from "../../kurtosis_engine_rpc_api_consts/kurtosis_engine_rpc_api_consts";
 import {EnclaveContext} from "../enclave_context/enclave_context";
 import * as grpc from "grpc";
-import { Result, err, ok } from "neverthrow";
+import { Result, err, ok, Err } from "neverthrow";
 import {newCreateEnclaveArgs, newDestroyEnclaveArgs, newStopEnclaveArgs} from "../constructor_calls";
 import {
     CreateEnclaveArgs,
-    CreateEnclaveResponse, DestroyEnclaveArgs, EnclaveAPIContainerInfo, EnclaveAPIContainerStatusMap,
+    CreateEnclaveResponse, DestroyEnclaveArgs, EnclaveAPIContainerHostMachineInfo, EnclaveAPIContainerInfo, EnclaveAPIContainerStatus, EnclaveAPIContainerStatusMap,
+    EnclaveContainersStatus,
+    EnclaveContainersStatusMap,
     EnclaveInfo, GetEnclavesResponse, StopEnclaveArgs
 } from "../../kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import {ApiContainerContext} from "../api_container_context/api_container_context";
@@ -83,9 +85,12 @@ export class KurtosisContext {
         if (enclaveInfo === undefined) {
             return err(new Error("An error occurred creating enclave with ID " + enclaveId + " enclaveInfo is undefined; this is a bug on this library" ))
         }
-        const enclaveContext = this.newEnclaveContextFromEnclaveInfo(enclaveInfo);
+        const newEnclaveContextResult: Result<EnclaveContext, Error> = this.newEnclaveContextFromEnclaveInfo(enclaveInfo);
+        if (newEnclaveContextResult.isErr()) {
+            return err(new Error(`An error occurred creating an enclave context from a newly-created enclave; this should never happen`))
+        }
 
-        return ok(enclaveContext);
+        return ok(newEnclaveContextResult.value);
     }
 
     public async getEnclaves(): Promise<Result<Map<string, EnclaveContext>, Error>>{
@@ -165,30 +170,47 @@ export class KurtosisContext {
 
         const enclaveContextMap: Map<string, EnclaveContext> = new Map<string, EnclaveContext>()
 
-        enclaveInfoMap.forEach((value: EnclaveInfo, key: string) => {
-            const enclaveContext: EnclaveContext = this.newEnclaveContextFromEnclaveInfo(value);
-            enclaveContextMap.set(key,enclaveContext);
-        });
+        for (const [key, value] of enclaveInfoMap.entries()) {
+            const newEnclaveContextResult: Result<EnclaveContext, Error> = this.newEnclaveContextFromEnclaveInfo(value);
+            if (newEnclaveContextResult.isErr()) {
+                // TODO This is really nasty - we skip enclaves that we can't create, and the only reason we wouldn't be able to create
+                //  enclaves is because of stopped containers. Basically, we should move the API container into the engine-server, and
+                //  make it impossible for enclaves to be in an invalid state at all
+                continue;
+            }
+            enclaveContextMap.set(key, newEnclaveContextResult.value);
+        }
 
         return enclaveContextMap;
     }
 
-    private newEnclaveContextFromEnclaveInfo(enclaveInfo: EnclaveInfo): EnclaveContext {
+    private newEnclaveContextFromEnclaveInfo(enclaveInfo: EnclaveInfo): Result<EnclaveContext, Error> {
+        const enclaveContainersStatus = enclaveInfo.getContainersStatus()
+        if (enclaveContainersStatus !== EnclaveContainersStatus.ENCLAVECONTAINERSSTATUS_RUNNING) {
+            return err(new Error(`Enclave containers status was '${enclaveContainersStatus}', but we can't create an enclave context from a non-running enclave`))
+        }
+
+        const enclaveApiContainerStatus = enclaveInfo.getApiContainerStatus()
+        if (enclaveApiContainerStatus !== EnclaveAPIContainerStatus.ENCLAVEAPICONTAINERSTATUS_RUNNING) {
+            return err(new Error(`Enclave API container status was '${enclaveApiContainerStatus}', but we can't create an enclave context without a running API container`))
+        }
 
         const apiContainerInfo: EnclaveAPIContainerInfo | undefined = enclaveInfo.getApiContainerInfo();
-        let apiContainerContext: ApiContainerContext | undefined = undefined;
-
-        let nonExistentApiContainerStatus: number = 0;
-
-        if (apiContainerInfo !== undefined) {
-            apiContainerContext = new ApiContainerContext(
-                apiContainerInfo.getContainerId(),
-                apiContainerInfo.getIpInsideEnclave(),
-                apiContainerInfo.getPortInsideEnclave(),
-                apiContainerInfo.getIpOnHostMachine(),
-                apiContainerInfo.getPortOnHostMachine()
-            )
+        if (apiContainerInfo === undefined) {
+            return err(new Error(`API container was listed as running, but no API container info exists`))
         }
+        const apiContainerHostMachineInfo: EnclaveAPIContainerHostMachineInfo | undefined = enclaveInfo.getApiContainerHostMachineInfo()
+        if (apiContainerHostMachineInfo === undefined) {
+            return err(new Error(`API container was listed as running, but no API container host machine info exists`))
+        }
+
+        const apiContainerContext: ApiContainerContext = new ApiContainerContext(
+            apiContainerInfo.getContainerId(),
+            apiContainerInfo.getIpInsideEnclave(),
+            apiContainerInfo.getPortInsideEnclave(),
+            apiContainerHostMachineInfo.getIpOnHostMachine(),
+            apiContainerHostMachineInfo.getPortOnHostMachine()
+        )
 
         const enclaveContext: EnclaveContext = new EnclaveContext(
             enclaveInfo.getEnclaveId(),
@@ -197,6 +219,6 @@ export class KurtosisContext {
             apiContainerContext,
         )
 
-        return enclaveContext;
+        return ok(enclaveContext);
     }
 }

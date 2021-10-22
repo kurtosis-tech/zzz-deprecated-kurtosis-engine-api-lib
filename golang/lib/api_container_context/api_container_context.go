@@ -1,5 +1,6 @@
 package api_container_context
 
+// TODO Combine this into enclave context, now that enclave contexts can no longer be created if they don't have a valid API container!
 type APIContainerContext struct {
 	containerID  string
 	ipInsideEnclave string

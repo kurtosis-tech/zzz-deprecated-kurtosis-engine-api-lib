@@ -66,7 +66,10 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave with ID '%v'", enclaveId)
 	}
 
-	enclaveContext := newEnclaveContextFromEnclaveInfo(response.EnclaveInfo)
+	enclaveContext, err := newEnclaveContextFromEnclaveInfo(response.EnclaveInfo)
+	if err != nil {
+		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave context from a newly-created enclave; this should never happen")
+	}
 
 	return enclaveContext, nil
 }
@@ -117,7 +120,13 @@ func newEnclaveContextMapFromEnclaveInfoMap(
 
 	enclaveContextMap := map[string]*enclave_context.EnclaveContext{}
 	for enclaveId, enclaveInfo := range enclaveInfoMap {
-		enclaveContext := newEnclaveContextFromEnclaveInfo(enclaveInfo)
+		enclaveContext, err := newEnclaveContextFromEnclaveInfo(enclaveInfo)
+		if err != nil {
+			// TODO This is really nasty - we skip enclaves that we can't create, and the only reason we wouldn't be able to create
+			//  enclaves is because of stopped containers. Basically, we should move the API container into the engine-server, and
+			//  make it impossible for enclaves to be in an invalid state at all
+			continue
+		}
 		enclaveContextMap[enclaveId] = enclaveContext
 	}
 
@@ -125,18 +134,42 @@ func newEnclaveContextMapFromEnclaveInfoMap(
 }
 
 func newEnclaveContextFromEnclaveInfo(
-		enclaveInfo *kurtosis_engine_rpc_api_bindings.EnclaveInfo) *enclave_context.EnclaveContext {
+	enclaveInfo *kurtosis_engine_rpc_api_bindings.EnclaveInfo,
+) (*enclave_context.EnclaveContext, error) {
+
+	enclaveContainersStatus := enclaveInfo.GetContainersStatus()
+	if enclaveContainersStatus != kurtosis_engine_rpc_api_bindings.EnclaveContainersStatus_EnclaveContainersStatus_RUNNING {
+		return nil, stacktrace.NewError(
+			"Enclave containers status was '%v', but we can't create an enclave context from a non-running enclave",
+			enclaveContainersStatus,
+		)
+	}
+
+	enclaveApiContainerStatus := enclaveInfo.GetApiContainerStatus()
+	if enclaveApiContainerStatus != kurtosis_engine_rpc_api_bindings.EnclaveAPIContainerStatus_EnclaveAPIContainerStatus_RUNNING {
+		return nil, stacktrace.NewError(
+			"Enclave API container status was '%v', but we can't create an enclave context without a running API container",
+			enclaveApiContainerStatus,
+		)
+	}
 
 	apiContainerInfo := enclaveInfo.GetApiContainerInfo()
+	if apiContainerInfo == nil {
+		return nil, stacktrace.NewError("API container was listed as running, but no API container info exists")
+	}
+	apiContainerHostMachineInfo := enclaveInfo.GetApiContainerHostMachineInfo()
+	if apiContainerHostMachineInfo == nil {
+		return nil, stacktrace.NewError("API container was listed as running, but no API container host machine info exists")
+	}
 
-	var apiContainerContext *api_container_context.APIContainerContext
 
-	apiContainerContext = api_container_context.NewAPIContainerContext(
+	apiContainerContext := api_container_context.NewAPIContainerContext(
 		apiContainerInfo.GetContainerId(),
 		apiContainerInfo.GetIpInsideEnclave(),
 		apiContainerInfo.GetPortInsideEnclave(),
-		apiContainerInfo.GetIpOnHostMachine(),
-		apiContainerInfo.GetPortOnHostMachine())
+		apiContainerHostMachineInfo.GetIpOnHostMachine(),
+		apiContainerHostMachineInfo.GetPortOnHostMachine(),
+	)
 
 	enclaveContext := enclave_context.NewEnclaveContext(
 		enclaveInfo.GetEnclaveId(),
@@ -144,5 +177,5 @@ func newEnclaveContextFromEnclaveInfo(
 		enclaveInfo.GetNetworkCidr(),
 		apiContainerContext,
 	)
-	return enclaveContext
+	return enclaveContext, nil
 }
