@@ -1,5 +1,10 @@
 # TBD
 
+# 0.7.2
+### Fixes
+* Made the API container host machine info optional, to represent that host machine info will only be present if the API container is running
+* `EnclaveContext`s cannot be constructed if the API container isn't running
+
 # 0.7.1
 ### Fixes
 * Remove unneeded Kurt Core dependency

@@ -86,6 +86,10 @@ message EnclaveAPIContainerInfo {
   string ip_inside_enclave = 2;
   // The port inside the enclave network that the API container is listening on
   uint32 port_inside_enclave = 3;
+}
+
+// Will only be present if the API container is running
+message EnclaveAPIContainerHostMachineInfo {
   // The interface IP on the container engine host machine where the API container can be reached
   string ip_on_host_machine = 4;
   // The port on the container engine host machine where the API container can be reached
@@ -111,6 +115,9 @@ message EnclaveInfo {
 
   // NOTE: Will not be present if the API container status is "NONEXISTENT"!!
   EnclaveAPIContainerInfo api_container_info = 6;
+
+  // NOTE: Will not be present if the API container status is not "RUNNING"!!
+  EnclaveAPIContainerHostMachineInfo api_container_host_machine_info = 7;
 }
 
 message GetEnclavesResponse {

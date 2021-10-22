@@ -92,12 +92,6 @@ export class EnclaveAPIContainerInfo extends jspb.Message {
   getPortInsideEnclave(): number;
   setPortInsideEnclave(value: number): void;
 
-  getIpOnHostMachine(): string;
-  setIpOnHostMachine(value: string): void;
-
-  getPortOnHostMachine(): number;
-  setPortOnHostMachine(value: number): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): EnclaveAPIContainerInfo.AsObject;
   static toObject(includeInstance: boolean, msg: EnclaveAPIContainerInfo): EnclaveAPIContainerInfo.AsObject;
@@ -113,6 +107,28 @@ export namespace EnclaveAPIContainerInfo {
     containerId: string,
     ipInsideEnclave: string,
     portInsideEnclave: number,
+  }
+}
+
+export class EnclaveAPIContainerHostMachineInfo extends jspb.Message {
+  getIpOnHostMachine(): string;
+  setIpOnHostMachine(value: string): void;
+
+  getPortOnHostMachine(): number;
+  setPortOnHostMachine(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EnclaveAPIContainerHostMachineInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: EnclaveAPIContainerHostMachineInfo): EnclaveAPIContainerHostMachineInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EnclaveAPIContainerHostMachineInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnclaveAPIContainerHostMachineInfo;
+  static deserializeBinaryFromReader(message: EnclaveAPIContainerHostMachineInfo, reader: jspb.BinaryReader): EnclaveAPIContainerHostMachineInfo;
+}
+
+export namespace EnclaveAPIContainerHostMachineInfo {
+  export type AsObject = {
     ipOnHostMachine: string,
     portOnHostMachine: number,
   }
@@ -139,6 +155,11 @@ export class EnclaveInfo extends jspb.Message {
   getApiContainerInfo(): EnclaveAPIContainerInfo | undefined;
   setApiContainerInfo(value?: EnclaveAPIContainerInfo): void;
 
+  hasApiContainerHostMachineInfo(): boolean;
+  clearApiContainerHostMachineInfo(): void;
+  getApiContainerHostMachineInfo(): EnclaveAPIContainerHostMachineInfo | undefined;
+  setApiContainerHostMachineInfo(value?: EnclaveAPIContainerHostMachineInfo): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): EnclaveInfo.AsObject;
   static toObject(includeInstance: boolean, msg: EnclaveInfo): EnclaveInfo.AsObject;
@@ -157,6 +178,7 @@ export namespace EnclaveInfo {
     containersStatus: EnclaveContainersStatusMap[keyof EnclaveContainersStatusMap],
     apiContainerStatus: EnclaveAPIContainerStatusMap[keyof EnclaveAPIContainerStatusMap],
     apiContainerInfo?: EnclaveAPIContainerInfo.AsObject,
+    apiContainerHostMachineInfo?: EnclaveAPIContainerHostMachineInfo.AsObject,
   }
 }
 
