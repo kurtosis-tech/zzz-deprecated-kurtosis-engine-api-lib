@@ -1,4 +1,6 @@
 # TBD
+
+# 0.8.2
 ### Features
 * Publish the Typescript library to `kurtosis-engine-api-lib`
 
