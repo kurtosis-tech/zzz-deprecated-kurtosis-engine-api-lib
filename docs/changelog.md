@@ -3,6 +3,9 @@
 * All the endpoints from Kurt Client have been ported over here
 * All the high-level API for interacting with the API container (`NetworkContext` and its descendants) has been ported here
 
+### Breaking Changes
+* The `EngineServiceServer` has many more inner-enclave manipulation methods that it must now implement
+
 # 0.7.2
 ### Fixes
 * Made the API container host machine info optional, to represent that host machine info will only be present if the API container is running
