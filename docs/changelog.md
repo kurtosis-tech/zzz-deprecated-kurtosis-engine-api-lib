@@ -1,4 +1,9 @@
 # TBD
+### Features
+* Publish the Typescript library to `kurtosis-engine-api-lib`
+
+### Fixes
+* Export necessary types in `index.ts`
 
 # 0.8.1
 ### Fixes
