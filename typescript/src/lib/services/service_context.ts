@@ -10,16 +10,19 @@ import * as grpc from "grpc";
 export class ServiceContext {
     
     private readonly client: ApiContainerServiceClient;
+    private readonly enclaveId: string;
     private readonly serviceId: ServiceID;
     private readonly ipAddress: string;
     private readonly sharedDirectory: SharedPath;
 
     constructor(
             client: ApiContainerServiceClient,
+            enclaveId: string,
             serviceId: ServiceID,
             ipAddress: string,
             sharedDirectory: SharedPath) {
         this.client = client;
+        this.enclaveId = enclaveId;
         this.serviceId = serviceId;
         this.ipAddress = ipAddress;
         this.sharedDirectory = sharedDirectory;
@@ -43,7 +46,7 @@ export class ServiceContext {
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async execCommand(command: string[]): Promise<Result<[number, string], Error>> {
         const serviceId: ServiceID = this.serviceId;
-        const args: ExecCommandArgs = newExecCommandArgs(serviceId, command);
+        const args: ExecCommandArgs = newExecCommandArgs(this.enclaveId, serviceId, command);
 
         const promiseExecCommand: Promise<Result<ExecCommandResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.execCommand(args, (error: grpc.ServiceError | null, response?: ExecCommandResponse) => {

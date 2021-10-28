@@ -15,7 +15,9 @@ import {
     LoadModuleArgs,
     UnloadModuleArgs,
     ExecuteModuleArgs,
-    GetModuleInfoArgs
+    GetModuleInfoArgs,
+    GetServicesArgs,
+    GetModulesArgs
 } from '../kurtosis_engine_rpc_api_bindings/engine_service_pb';
 import { ServiceID } from './services/service';
 import { PartitionID } from './networks/network_context';
@@ -59,8 +61,9 @@ export function newDestroyEnclaveArgs(enclaveId:string): DestroyEnclaveArgs {
 // ==============================================================================================
 //                                     Load Module
 // ==============================================================================================
-export function newLoadModuleArgs(moduleId: ModuleID, image: string, serializedParams: string): LoadModuleArgs {
+export function newLoadModuleArgs(enclaveId: string, moduleId: ModuleID, image: string, serializedParams: string): LoadModuleArgs {
     const result: LoadModuleArgs = new LoadModuleArgs();
+    result.setEnclaveId(enclaveId);
     result.setModuleId(String(moduleId));
     result.setContainerImage(image);
     result.setSerializedParams(serializedParams);
@@ -71,8 +74,9 @@ export function newLoadModuleArgs(moduleId: ModuleID, image: string, serializedP
 // ==============================================================================================
 //                                     Unload Module
 // ==============================================================================================
-export function newUnloadModuleArgs(moduleId: ModuleID): UnloadModuleArgs {
+export function newUnloadModuleArgs(enclaveId: string, moduleId: ModuleID): UnloadModuleArgs {
     const result: UnloadModuleArgs = new UnloadModuleArgs();
+    result.setEnclaveId(enclaveId);
     result.setModuleId(String(moduleId));
 
     return result;
@@ -82,8 +86,9 @@ export function newUnloadModuleArgs(moduleId: ModuleID): UnloadModuleArgs {
 // ==============================================================================================
 //                                     Execute Module
 // ==============================================================================================
-export function newExecuteModuleArgs(moduleId: ModuleID, serializedParams: string): ExecuteModuleArgs {
+export function newExecuteModuleArgs(enclaveId: string, moduleId: ModuleID, serializedParams: string): ExecuteModuleArgs {
     const result: ExecuteModuleArgs = new ExecuteModuleArgs();
+    result.setEnclaveId(enclaveId);
     result.setModuleId(String(moduleId));
     result.setSerializedParams(serializedParams);
 
@@ -94,8 +99,9 @@ export function newExecuteModuleArgs(moduleId: ModuleID, serializedParams: strin
 // ==============================================================================================
 //                                     Get Module Info
 // ==============================================================================================
-export function newGetModuleInfoArgs(moduleId: ModuleID): GetModuleInfoArgs {
+export function newGetModuleInfoArgs(enclaveId: string, moduleId: ModuleID): GetModuleInfoArgs {
     const result: GetModuleInfoArgs = new GetModuleInfoArgs();
+    result.setEnclaveId(enclaveId);
     result.setModuleId(String(moduleId));
 
     return result;
@@ -105,8 +111,9 @@ export function newGetModuleInfoArgs(moduleId: ModuleID): GetModuleInfoArgs {
 // ==============================================================================================
 //                                       Register Files Artifacts
 // ==============================================================================================
-export function newRegisterFilesArtifactsArgs(filesArtifactIdStrsToUrls: Map<string, string>): RegisterFilesArtifactsArgs {
+export function newRegisterFilesArtifactsArgs(enclaveId: string, filesArtifactIdStrsToUrls: Map<string, string>): RegisterFilesArtifactsArgs {
     const result: RegisterFilesArtifactsArgs = new RegisterFilesArtifactsArgs();
+    result.setEnclaveId(enclaveId);
     const filesArtifactUrlsMap: jspb.Map<string, string> = result.getFilesArtifactUrlsMap();
     for (const [artifactId, artifactUrl] of filesArtifactIdStrsToUrls.entries()) {
         filesArtifactUrlsMap.set(artifactId, artifactUrl);
@@ -118,8 +125,9 @@ export function newRegisterFilesArtifactsArgs(filesArtifactIdStrsToUrls: Map<str
 // ==============================================================================================
 //                                     Register Service
 // ==============================================================================================
-export function newRegisterServiceArgs(serviceId: ServiceID, partitionId: PartitionID): RegisterServiceArgs {
+export function newRegisterServiceArgs(enclaveId: string, serviceId: ServiceID, partitionId: PartitionID): RegisterServiceArgs {
     const result: RegisterServiceArgs = new RegisterServiceArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(String(serviceId));
     result.setPartitionId(String(partitionId));
 
@@ -131,6 +139,7 @@ export function newRegisterServiceArgs(serviceId: ServiceID, partitionId: Partit
 //                                        Start Service
 // ==============================================================================================
 export function newStartServiceArgs(
+        enclaveId: string, 
         serviceId: ServiceID, 
         dockerImage: string,
         usedPorts: Set<string>,
@@ -140,6 +149,7 @@ export function newStartServiceArgs(
         enclaveDataDirMntDirpath: string,
         filesArtifactMountDirpaths: Map<string, string>): StartServiceArgs {
     const result: StartServiceArgs = new StartServiceArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(String(serviceId));
     result.setDockerImage(dockerImage);
     const usedPortsMap: jspb.Map<string, boolean> = result.getUsedPortsMap();
@@ -170,8 +180,9 @@ export function newStartServiceArgs(
 // ==============================================================================================
 //                                       Get Service Info
 // ==============================================================================================
-export function newGetServiceInfoArgs(serviceId: ServiceID): GetServiceInfoArgs{
+export function newGetServiceInfoArgs(enclaveId: string, serviceId: ServiceID): GetServiceInfoArgs{
     const result: GetServiceInfoArgs = new GetServiceInfoArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(String(serviceId));
 
     return result;
@@ -181,8 +192,9 @@ export function newGetServiceInfoArgs(serviceId: ServiceID): GetServiceInfoArgs{
 // ==============================================================================================
 //                                        Remove Service
 // ==============================================================================================
-export function newRemoveServiceArgs(serviceId: ServiceID, containerStopTimeoutSeconds: number): RemoveServiceArgs {
+export function newRemoveServiceArgs(enclaveId: string, serviceId: ServiceID, containerStopTimeoutSeconds: number): RemoveServiceArgs {
     const result: RemoveServiceArgs = new RemoveServiceArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(serviceId);
     result.setContainerStopTimeoutSeconds(containerStopTimeoutSeconds);
 
@@ -194,10 +206,12 @@ export function newRemoveServiceArgs(serviceId: ServiceID, containerStopTimeoutS
 //                                          Repartition
 // ==============================================================================================
 export function newRepartitionArgs(
+        enclaveId: string, 
         partitionServices: Map<string, PartitionServices>, 
         partitionConns: Map<string, PartitionConnections>,
         defaultConnection: PartitionConnectionInfo): RepartitionArgs {
     const result: RepartitionArgs = new RepartitionArgs();
+    result.setEnclaveId(enclaveId);
     const partitionServicesMap: jspb.Map<string, PartitionServices> = result.getPartitionServicesMap();
     for (const [partitionServiceId, partitionId] of partitionServices.entries()) {
         partitionServicesMap.set(partitionServiceId, partitionId);
@@ -235,8 +249,9 @@ export function newPartitionConnections(allConnectionInfo: Map<string, Partition
 // ==============================================================================================
 //                                          Exec Command
 // ==============================================================================================
-export function newExecCommandArgs(serviceId: ServiceID, command: string[]): ExecCommandArgs {
+export function newExecCommandArgs(enclaveId: string, serviceId: ServiceID, command: string[]): ExecCommandArgs {
     const result: ExecCommandArgs = new ExecCommandArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(serviceId);
     result.setCommandArgsList(command);
 
@@ -248,6 +263,7 @@ export function newExecCommandArgs(serviceId: ServiceID, command: string[]): Exe
 //                           Wait For Http Get Endpoint Availability
 // ==============================================================================================
 export function newWaitForHttpGetEndpointAvailabilityArgs(
+        enclaveId: string, 
         serviceId: ServiceID,
         port: number, 
         path: string,
@@ -256,6 +272,7 @@ export function newWaitForHttpGetEndpointAvailabilityArgs(
         retriesDelayMilliseconds: number, 
         bodyText: string): WaitForHttpGetEndpointAvailabilityArgs {
     const result: WaitForHttpGetEndpointAvailabilityArgs = new WaitForHttpGetEndpointAvailabilityArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(String(serviceId));
     result.setPort(port);
     result.setPath(path);
@@ -271,6 +288,7 @@ export function newWaitForHttpGetEndpointAvailabilityArgs(
 //                           Wait For Http Post Endpoint Availability
 // ==============================================================================================
 export function newWaitForHttpPostEndpointAvailabilityArgs(
+        enclaveId: string, 
         serviceId: ServiceID,
         port: number, 
         path: string,
@@ -280,6 +298,7 @@ export function newWaitForHttpPostEndpointAvailabilityArgs(
         retriesDelayMilliseconds: number, 
         bodyText: string): WaitForHttpPostEndpointAvailabilityArgs {
     const result: WaitForHttpPostEndpointAvailabilityArgs = new WaitForHttpPostEndpointAvailabilityArgs();
+    result.setEnclaveId(enclaveId);
     result.setServiceId(String(serviceId));
     result.setPort(port);
     result.setPath(path);
@@ -295,10 +314,29 @@ export function newWaitForHttpPostEndpointAvailabilityArgs(
 // ==============================================================================================
 //                                      Execute Bulk Commands
 // ==============================================================================================
-export function newExecuteBulkCommandsArgs(serializedCommands: string): ExecuteBulkCommandsArgs {
+export function newExecuteBulkCommandsArgs(enclaveId: string, serializedCommands: string): ExecuteBulkCommandsArgs {
     const result: ExecuteBulkCommandsArgs = new ExecuteBulkCommandsArgs();
+    result.setEnclaveId(enclaveId);
     result.setSerializedCommands(serializedCommands);
 
     return result;
 }
 
+
+// ==============================================================================================
+//                                          Get Services
+// ==============================================================================================
+export function newGetServicesArgs(enclaveId: string): GetServicesArgs {
+    const result: GetServicesArgs = new GetServicesArgs();
+    result.setEnclaveId(enclaveId);
+    return result;
+}
+
+// ==============================================================================================
+//                                          Get Modules
+// ==============================================================================================
+export function newGetModulesArgs(enclaveId: string): GetServicesArgs {
+    const result: GetModulesArgs = new GetModulesArgs();
+    result.setEnclaveId(enclaveId);
+    return result;
+}
