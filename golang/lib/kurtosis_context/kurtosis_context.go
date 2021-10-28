@@ -7,7 +7,7 @@ import (
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_consts"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/api_container_context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/enclave_context"
-	"github.com/palantir/stacktrace"
+	"github.com/kurtosis-tech/stacktrace"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

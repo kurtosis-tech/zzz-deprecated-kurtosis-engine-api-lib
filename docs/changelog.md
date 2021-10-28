@@ -1,5 +1,9 @@
 # TBD
 
+# 0.8.1
+### Fixes
+* `stacktrace.Propagate` will now panic when it receives a nil cause, rather than silently returning nil
+
 # 0.8.0
 ### Features
 * All the endpoints from Kurt Client have been ported over here
