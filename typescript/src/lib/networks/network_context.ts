@@ -27,7 +27,7 @@ import {
     GetModuleInfoArgs,
     GetModuleInfoResponse,
     GetModulesResponse,
-} from "../..//kurtosis_core_rpc_api_bindings/api_container_service_pb";
+} from "../..//kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import { ModuleID, ModuleContext } from "../modules/module_context";
 import { ServiceID} from "../services/service";
 import { SharedPath } from "../services/shared_path";
