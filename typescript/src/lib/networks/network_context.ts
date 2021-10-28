@@ -3,7 +3,7 @@
  * All Rights Reserved.
  */
 
-import { ApiContainerServiceClient } from "../..//kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb";
+import { EngineServiceClient } from "../..//kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb";
 import {
     RegisterFilesArtifactsArgs,
     PortBinding,
@@ -66,7 +66,7 @@ const SERVICE_ENCLAVE_DATA_DIR_MOUNTPOINT: string = "/kurtosis-enclave-data";
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 export class NetworkContext {
-    private readonly client: ApiContainerServiceClient;
+    private readonly client: EngineServiceClient;
     
     // The location on the filesystem where this code is running where the enclave data dir exists
     private readonly enclaveDataDirpath: string;
@@ -74,7 +74,7 @@ export class NetworkContext {
     /*
     Creates a new NetworkContext object with the given parameters.
     */
-    constructor(client: ApiContainerServiceClient, enclaveDataDirpath: string) {
+    constructor(client: EngineServiceClient, enclaveDataDirpath: string) {
         this.client = client;
         this.enclaveDataDirpath = enclaveDataDirpath;
     }

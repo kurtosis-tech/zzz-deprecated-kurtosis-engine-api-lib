@@ -1,4 +1,4 @@
-import { ApiContainerServiceClient } from '../../kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb'; 
+import { EngineServiceClient } from '../../kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb'; 
 import { ExecCommandArgs, ExecCommandResponse } from '../../kurtosis_engine_rpc_api_bindings/engine_service_pb';
 import { ServiceID} from './service';
 import { SharedPath } from './shared_path';
@@ -9,14 +9,14 @@ import * as grpc from "grpc";
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 export class ServiceContext {
     
-    private readonly client: ApiContainerServiceClient;
+    private readonly client: EngineServiceClient;
     private readonly enclaveId: string;
     private readonly serviceId: ServiceID;
     private readonly ipAddress: string;
     private readonly sharedDirectory: SharedPath;
 
     constructor(
-            client: ApiContainerServiceClient,
+            client: EngineServiceClient,
             enclaveId: string,
             serviceId: ServiceID,
             ipAddress: string,

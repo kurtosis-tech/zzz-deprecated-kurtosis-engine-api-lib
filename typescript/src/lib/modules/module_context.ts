@@ -1,4 +1,4 @@
-import { ApiContainerServiceClient } from "../../kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb";
+import { EngineServiceClient } from "../../kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb";
 import { ExecuteModuleArgs, ExecuteModuleResponse } from "../../kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import { newExecuteModuleArgs as newExecuteModuleArgs } from "../constructor_calls";
 import { ok, err, Result } from "neverthrow";
@@ -8,10 +8,10 @@ export type ModuleID = string;
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 export class ModuleContext {
-    private readonly client: ApiContainerServiceClient;
+    private readonly client: EngineServiceClient;
     private readonly moduleId: ModuleID;
     
-    constructor (client: ApiContainerServiceClient, moduleId: ModuleID) {
+    constructor (client: EngineServiceClient, moduleId: ModuleID) {
         this.client = client;
         this.moduleId = moduleId;
     }
