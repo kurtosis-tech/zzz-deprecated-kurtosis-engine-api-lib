@@ -9,16 +9,18 @@ export type ModuleID = string;
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 export class ModuleContext {
     private readonly client: EngineServiceClient;
+    private readonly enclaveId: string;
     private readonly moduleId: ModuleID;
     
-    constructor (client: EngineServiceClient, moduleId: ModuleID) {
+    constructor (client: EngineServiceClient, enclaveId: string, moduleId: ModuleID) {
         this.client = client;
+        this.enclaveId = enclaveId;
         this.moduleId = moduleId;
     }
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async execute(serializedParams: string): Promise<Result<string, Error>> {
-        const args: ExecuteModuleArgs = newExecuteModuleArgs(this.moduleId, serializedParams);
+        const args: ExecuteModuleArgs = newExecuteModuleArgs(this.enclaveId, this.moduleId, serializedParams);
 
         const executeModulePromise: Promise<Result<ExecuteModuleResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.executeModule(args, (error: grpc.ServiceError | null, response?: ExecuteModuleResponse) => {

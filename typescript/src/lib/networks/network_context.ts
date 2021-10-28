@@ -27,6 +27,8 @@ import {
     GetModuleInfoArgs,
     GetModuleInfoResponse,
     GetModulesResponse,
+    GetServicesArgs,
+    GetModulesArgs,
 } from "../..//kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import { ModuleID, ModuleContext } from "../modules/module_context";
 import { ServiceID} from "../services/service";
@@ -46,7 +48,9 @@ import {
     newWaitForHttpGetEndpointAvailabilityArgs,
     newWaitForHttpPostEndpointAvailabilityArgs,
     newExecuteBulkCommandsArgs,
-    newUnloadModuleArgs
+    newUnloadModuleArgs,
+    newGetServicesArgs,
+    newGetModulesArgs
 } from "../constructor_calls";
 import { ok, err, Result } from "neverthrow";
 import * as log from "loglevel";
@@ -67,6 +71,8 @@ const SERVICE_ENCLAVE_DATA_DIR_MOUNTPOINT: string = "/kurtosis-enclave-data";
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 export class NetworkContext {
     private readonly client: EngineServiceClient;
+
+    private readonly enclaveId: string;
     
     // The location on the filesystem where this code is running where the enclave data dir exists
     private readonly enclaveDataDirpath: string;
@@ -74,8 +80,9 @@ export class NetworkContext {
     /*
     Creates a new NetworkContext object with the given parameters.
     */
-    constructor(client: EngineServiceClient, enclaveDataDirpath: string) {
+    constructor(client: EngineServiceClient, enclaveId: string, enclaveDataDirpath: string) {
         this.client = client;
+        this.enclaveId = enclaveId;
         this.enclaveDataDirpath = enclaveDataDirpath;
     }
 
@@ -84,7 +91,7 @@ export class NetworkContext {
             moduleId: ModuleID,
             image: string,
             serializedParams: string): Promise<Result<ModuleContext, Error>> {
-        const args: LoadModuleArgs = newLoadModuleArgs(moduleId, image, serializedParams);
+        const args: LoadModuleArgs = newLoadModuleArgs(this.enclaveId, moduleId, image, serializedParams);
 
         const loadModulePromise: Promise<Result<google_protobuf_empty_pb.Empty, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.loadModule(args, (error: grpc.ServiceError | null, response?: google_protobuf_empty_pb.Empty) => {
@@ -104,13 +111,13 @@ export class NetworkContext {
             return err(loadModuleResult.error);
         }
 
-        const moduleCtx: ModuleContext = new ModuleContext(this.client, moduleId);
+        const moduleCtx: ModuleContext = new ModuleContext(this.client, this.enclaveId, moduleId);
         return ok(moduleCtx);
     }
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async unloadModule(moduleId: ModuleID): Promise<Result<null,Error>> {
-        const args: UnloadModuleArgs = newUnloadModuleArgs(moduleId);
+        const args: UnloadModuleArgs = newUnloadModuleArgs(this.enclaveId, moduleId);
 
         const unloadModulePromise: Promise<Result<google_protobuf_empty_pb.Empty, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.unloadModule(args, (error: grpc.ServiceError | null, response?: google_protobuf_empty_pb.Empty) => {
@@ -135,7 +142,7 @@ export class NetworkContext {
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async getModuleContext(moduleId: ModuleID): Promise<Result<ModuleContext, Error>> {
-        const args: GetModuleInfoArgs = newGetModuleInfoArgs(moduleId);
+        const args: GetModuleInfoArgs = newGetModuleInfoArgs(this.enclaveId, moduleId);
         
         const getModuleInfoPromise: Promise<Result<GetModuleInfoResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.getModuleInfo(args, (error: grpc.ServiceError | null, response?: GetModuleInfoResponse) => {
@@ -154,7 +161,7 @@ export class NetworkContext {
             return err(getModuleInfoResult.error);
         }
 
-        const moduleCtx: ModuleContext = new ModuleContext(this.client, moduleId);
+        const moduleCtx: ModuleContext = new ModuleContext(this.client, this.enclaveId, moduleId);
         return ok(moduleCtx);
     }
 
@@ -164,7 +171,7 @@ export class NetworkContext {
         for (const [artifactId, url] of filesArtifactUrls.entries()) {
             filesArtifactIdStrsToUrls.set(String(artifactId), url);
         }
-        const args: RegisterFilesArtifactsArgs = newRegisterFilesArtifactsArgs(filesArtifactIdStrsToUrls);
+        const args: RegisterFilesArtifactsArgs = newRegisterFilesArtifactsArgs(this.enclaveId, filesArtifactIdStrsToUrls);
         
         const promiseRegisterFilesArtifacts: Promise<Result<google_protobuf_empty_pb.Empty, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.registerFilesArtifacts(args, (error: grpc.ServiceError | null, response?: google_protobuf_empty_pb.Empty) => {
@@ -214,7 +221,7 @@ export class NetworkContext {
         ): Promise<Result<[ServiceContext, Map<string, PortBinding>], Error>> {
 
         log.trace("Registering new service ID with Kurtosis API...");
-        const registerServiceArgs: RegisterServiceArgs = newRegisterServiceArgs(serviceId, partitionId);
+        const registerServiceArgs: RegisterServiceArgs = newRegisterServiceArgs(this.enclaveId, serviceId, partitionId);
 
         const promiseRegisterService: Promise<Result<RegisterServiceResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.registerService(registerServiceArgs, (error: grpc.ServiceError | null, response?: RegisterServiceResponse) => {
@@ -260,6 +267,7 @@ export class NetworkContext {
 
         log.trace("Starting new service with Kurtosis API...");
         const startServiceArgs: StartServiceArgs = newStartServiceArgs(
+            this.enclaveId, 
             serviceId, 
             containerConfig.getImage(), 
             containerConfig.getUsedPortsSet(),
@@ -291,6 +299,7 @@ export class NetworkContext {
 
         const serviceContext: ServiceContext = new ServiceContext(
             this.client,
+            this.enclaveId, 
             serviceId,
             serviceIpAddr,
             sharedDirectory);
@@ -305,7 +314,7 @@ export class NetworkContext {
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async getServiceContext(serviceId: ServiceID): Promise<Result<ServiceContext, Error>> {
-        const getServiceInfoArgs: GetServiceInfoArgs = newGetServiceInfoArgs(serviceId);
+        const getServiceInfoArgs: GetServiceInfoArgs = newGetServiceInfoArgs(this.enclaveId, serviceId);
         
         const promiseGetServiceInfo: Promise<Result<GetServiceInfoResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.getServiceInfo(getServiceInfoArgs, (error: Error | null, response?: GetServiceInfoResponse) => {
@@ -353,6 +362,7 @@ export class NetworkContext {
 
         const serviceContext: ServiceContext = new ServiceContext(
             this.client,
+            this.enclaveId, 
             serviceId,
             serviceResponse.getIpAddr(),
             sharedDirectory,
@@ -368,7 +378,7 @@ export class NetworkContext {
         // NOTE: This is kinda weird - when we remove a service we can never get it back so having a container
         //  stop timeout doesn't make much sense. It will make more sense when we can stop/start containers
         // Independent of adding/removing them from the network
-        const args: RemoveServiceArgs = newRemoveServiceArgs(serviceId, containerStopTimeoutSeconds);
+        const args: RemoveServiceArgs = newRemoveServiceArgs(this.enclaveId, serviceId, containerStopTimeoutSeconds);
         
         const removeServicePromise: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.removeService(args, (error: Error | null, _unusedResponse?: google_protobuf_empty_pb.Empty) => {
@@ -428,7 +438,7 @@ export class NetworkContext {
             reqPartitionConns.set(partitionAIdStr, partitionAConns);
         }
 
-        const repartitionArgs: RepartitionArgs = newRepartitionArgs(reqPartitionServices, reqPartitionConns, defaultConnection);
+        const repartitionArgs: RepartitionArgs = newRepartitionArgs(this.enclaveId, reqPartitionServices, reqPartitionConns, defaultConnection);
 
         const promiseRepartition: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.repartition(repartitionArgs, (error: Error | null, _unusedResponse?: google_protobuf_empty_pb.Empty) => {
@@ -457,6 +467,7 @@ export class NetworkContext {
         retriesDelayMilliseconds: number, 
         bodyText: string): Promise<Result<null, Error>> {
     const availabilityArgs: WaitForHttpGetEndpointAvailabilityArgs = newWaitForHttpGetEndpointAvailabilityArgs(
+        this.enclaveId,
         serviceId,
         port,
         path,
@@ -493,6 +504,7 @@ export class NetworkContext {
             retriesDelayMilliseconds: number, 
             bodyText: string): Promise<Result<null, Error>> {
         const availabilityArgs: WaitForHttpPostEndpointAvailabilityArgs = newWaitForHttpPostEndpointAvailabilityArgs(
+            this.enclaveId,
             serviceId,
             port,
             path,
@@ -522,7 +534,7 @@ export class NetworkContext {
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async executeBulkCommands(bulkCommandsJson: string): Promise<Result<null, Error>> {
 
-        const args: ExecuteBulkCommandsArgs = newExecuteBulkCommandsArgs(bulkCommandsJson);
+        const args: ExecuteBulkCommandsArgs = newExecuteBulkCommandsArgs(this.enclaveId, bulkCommandsJson);
         
         const promiseExecuteBulkCommands: Promise<Result<null, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.executeBulkCommands(args, (error: Error | null, _unusedResponse?: google_protobuf_empty_pb.Empty) => {
@@ -543,10 +555,10 @@ export class NetworkContext {
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async getServices(): Promise<Result<Set<ServiceID>, Error>> {
-        const emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
+        const args: GetServicesArgs = newGetServicesArgs(this.enclaveId);
         
         const promiseGetServices: Promise<Result<GetServicesResponse, Error>> = new Promise((resolve, _unusedReject) => {
-            this.client.getServices(emptyArg, (error: Error | null, response?: GetServicesResponse) => {
+            this.client.getServices(args, (error: Error | null, response?: GetServicesResponse) => {
                 if (error === null) {
                     if (!response) {
                         resolve(err(new Error("No error was encountered but the response was still falsy; this should never happen")));
@@ -577,10 +589,10 @@ export class NetworkContext {
 
     // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
     public async getModules(): Promise<Result<Set<ModuleID>, Error>> {
-        const emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
+        const args: GetModulesArgs = newGetModulesArgs(this.enclaveId)
         
         const getModulesPromise: Promise<Result<GetModulesResponse, Error>> = new Promise((resolve, _unusedReject) => {
-            this.client.getModules(emptyArg, (error: Error | null, response?: GetModulesResponse) => {
+            this.client.getModules(args, (error: Error | null, response?: GetModulesResponse) => {
                 if (error === null) {
                     if (!response) {
                         resolve(err(new Error("No error was encountered but the response was still falsy; this should never happen")));
