@@ -1,4 +1,4 @@
-import { ApiContainerServiceClient } from '../../kurtosis_core_rpc_api_bindings/api_container_service_grpc_pb'; 
+import { ApiContainerServiceClient } from '../../kurtosis_engine_rpc_api_bindings/engine_service_grpc_pb'; 
 import { ExecCommandArgs, ExecCommandResponse } from '../../kurtosis_engine_rpc_api_bindings/engine_service_pb';
 import { ServiceID} from './service';
 import { SharedPath } from './shared_path';
