@@ -304,8 +304,8 @@ export class LoadModuleArgs extends jspb.Message {
   getModuleId(): string;
   setModuleId(value: string): void;
 
-  getContainerImwge(): string;
-  setContainerImwge(value: string): void;
+  getContainerImage(): string;
+  setContainerImage(value: string): void;
 
   getSerializedParams(): string;
   setSerializedParams(value: string): void;
@@ -324,7 +324,7 @@ export namespace LoadModuleArgs {
   export type AsObject = {
     enclaveId: string,
     moduleId: string,
-    containerImwge: string,
+    containerImage: string,
     serializedParams: string,
   }
 }

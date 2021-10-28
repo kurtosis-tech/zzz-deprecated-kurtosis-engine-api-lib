@@ -2917,7 +2917,7 @@ proto.engine_api.LoadModuleArgs.toObject = function(includeInstance, msg) {
   var f, obj = {
     enclaveId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     moduleId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    containerImwge: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    containerImage: jspb.Message.getFieldWithDefault(msg, 3, ""),
     serializedParams: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
@@ -2965,7 +2965,7 @@ proto.engine_api.LoadModuleArgs.deserializeBinaryFromReader = function(msg, read
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setContainerImwge(value);
+      msg.setContainerImage(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -3014,7 +3014,7 @@ proto.engine_api.LoadModuleArgs.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = message.getContainerImwge();
+  f = message.getContainerImage();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -3068,10 +3068,10 @@ proto.engine_api.LoadModuleArgs.prototype.setModuleId = function(value) {
 
 
 /**
- * optional string container_imwge = 3;
+ * optional string container_image = 3;
  * @return {string}
  */
-proto.engine_api.LoadModuleArgs.prototype.getContainerImwge = function() {
+proto.engine_api.LoadModuleArgs.prototype.getContainerImage = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -3080,7 +3080,7 @@ proto.engine_api.LoadModuleArgs.prototype.getContainerImwge = function() {
  * @param {string} value
  * @return {!proto.engine_api.LoadModuleArgs} returns this
  */
-proto.engine_api.LoadModuleArgs.prototype.setContainerImwge = function(value) {
+proto.engine_api.LoadModuleArgs.prototype.setContainerImage = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 

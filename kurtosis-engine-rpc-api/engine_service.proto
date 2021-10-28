@@ -241,7 +241,7 @@ message LoadModuleArgs {
 
   string module_id = 2;
 
-  string container_imwge = 3;
+  string container_image = 3;
 
   // The serialized params object that will be passed, as-is, to the module for starting
   // The serialization format is dependent on the module
