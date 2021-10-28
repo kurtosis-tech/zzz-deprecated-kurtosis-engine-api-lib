@@ -19,21 +19,21 @@ package services
 
 import (
 	"context"
-	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
 	"github.com/palantir/stacktrace"
 )
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type ServiceContext struct {
-	client			kurtosis_core_rpc_api_bindings.ApiContainerServiceClient
+	client			kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
 	serviceId		ServiceID
 	ipAddress		string
 	sharedDirectory	*SharedPath
 }
 
 func NewServiceContext(
-		client kurtosis_core_rpc_api_bindings.ApiContainerServiceClient,
+		client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient,
 		serviceId ServiceID,
 		ipAddress string,
 	    sharedDirectory *SharedPath) *ServiceContext {

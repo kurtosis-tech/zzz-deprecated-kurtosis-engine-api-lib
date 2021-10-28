@@ -19,7 +19,7 @@ package v0_bulk_command_api
 
 import (
 	"encoding/json"
-	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/palantir/stacktrace"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -40,7 +40,7 @@ func newCmdArgDeserializingVisitor(bytesToDeserialize []byte) *cmdArgDeserializi
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitLoadModule() error {
-	args := &kurtosis_core_rpc_api_bindings.LoadModuleArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.LoadModuleArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the module-loading args")
 	}
@@ -49,7 +49,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitLoadModule() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitExecuteModule() error {
-	args := &kurtosis_core_rpc_api_bindings.ExecuteModuleArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.ExecuteModuleArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the module-executing args")
 	}
@@ -58,7 +58,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitExecuteModule() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitRegisterService() error {
-	args := &kurtosis_core_rpc_api_bindings.RegisterServiceArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.RegisterServiceArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the register service args")
 	}
@@ -67,7 +67,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitRegisterService() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitStartService() error {
-	args := &kurtosis_core_rpc_api_bindings.StartServiceArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.StartServiceArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the start service args")
 	}
@@ -76,7 +76,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitStartService() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitRemoveService() error {
-	args := &kurtosis_core_rpc_api_bindings.RemoveServiceArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.RemoveServiceArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the remove service args")
 	}
@@ -85,7 +85,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitRemoveService() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitRepartition() error {
-	args := &kurtosis_core_rpc_api_bindings.RepartitionArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.RepartitionArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the repartition service args")
 	}
@@ -94,7 +94,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitRepartition() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitExecCommand() error {
-	args := &kurtosis_core_rpc_api_bindings.ExecCommandArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.ExecCommandArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the exec command args")
 	}
@@ -103,7 +103,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitExecCommand() error {
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitWaitForHttpGetEndpointAvailability() error {
-	args := &kurtosis_core_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the endpoint availability-waiting-http-get args")
 	}
@@ -112,7 +112,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitWaitForHttpGetEndpointAvailabili
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitWaitForHttpPostEndpointAvailability() error {
-	args := &kurtosis_core_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the endpoint availability-waiting-http-post args")
 	}
@@ -121,7 +121,7 @@ func (visitor *cmdArgDeserializingVisitor) VisitWaitForHttpPostEndpointAvailabil
 }
 
 func (visitor *cmdArgDeserializingVisitor) VisitExecuteBulkCommands() error {
-	args := &kurtosis_core_rpc_api_bindings.ExecuteBulkCommandsArgs{}
+	args := &kurtosis_engine_rpc_api_bindings.ExecuteBulkCommandsArgs{}
 	if err := json.Unmarshal(visitor.bytesToDeserialize, args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred deserializing the bulk command execution args")
 	}

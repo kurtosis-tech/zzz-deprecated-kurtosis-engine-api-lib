@@ -1,6 +1,6 @@
 package binding_constructors
 
-import "github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+import "github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 
 // The generated bindings don't come with constructors (leaving it up to the user to initialize all the fields), so we
 // add them so that our code is safer
@@ -8,8 +8,8 @@ import "github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bi
 // ==============================================================================================
 //                                     Load Module
 // ==============================================================================================
-func NewLoadModuleArgs(moduleId string, containerImage string, serializedParams string) *kurtosis_core_rpc_api_bindings.LoadModuleArgs {
-	return &kurtosis_core_rpc_api_bindings.LoadModuleArgs{
+func NewLoadModuleArgs(moduleId string, containerImage string, serializedParams string) *kurtosis_engine_rpc_api_bindings.LoadModuleArgs {
+	return &kurtosis_engine_rpc_api_bindings.LoadModuleArgs{
 		ModuleId:         moduleId,
 		ContainerImage:   containerImage,
 		SerializedParams: serializedParams,
@@ -19,8 +19,8 @@ func NewLoadModuleArgs(moduleId string, containerImage string, serializedParams 
 // ==============================================================================================
 //                                     Unload Module
 // ==============================================================================================
-func NewUnloadModuleArgs(moduleId string) *kurtosis_core_rpc_api_bindings.UnloadModuleArgs {
-	return &kurtosis_core_rpc_api_bindings.UnloadModuleArgs{
+func NewUnloadModuleArgs(moduleId string) *kurtosis_engine_rpc_api_bindings.UnloadModuleArgs {
+	return &kurtosis_engine_rpc_api_bindings.UnloadModuleArgs{
 		ModuleId: moduleId,
 	}
 }
@@ -28,15 +28,15 @@ func NewUnloadModuleArgs(moduleId string) *kurtosis_core_rpc_api_bindings.Unload
 // ==============================================================================================
 //                                     Execute Module
 // ==============================================================================================
-func NewExecuteModuleArgs(moduleId string, serializedParams string) *kurtosis_core_rpc_api_bindings.ExecuteModuleArgs {
-	return &kurtosis_core_rpc_api_bindings.ExecuteModuleArgs{
+func NewExecuteModuleArgs(moduleId string, serializedParams string) *kurtosis_engine_rpc_api_bindings.ExecuteModuleArgs {
+	return &kurtosis_engine_rpc_api_bindings.ExecuteModuleArgs{
 		ModuleId:         moduleId,
 		SerializedParams: serializedParams,
 	}
 }
 
-func NewExecuteModuleResponse(serializedResult string) *kurtosis_core_rpc_api_bindings.ExecuteModuleResponse {
-	return &kurtosis_core_rpc_api_bindings.ExecuteModuleResponse{
+func NewExecuteModuleResponse(serializedResult string) *kurtosis_engine_rpc_api_bindings.ExecuteModuleResponse {
+	return &kurtosis_engine_rpc_api_bindings.ExecuteModuleResponse{
 		SerializedResult: serializedResult,
 	}
 }
@@ -44,14 +44,14 @@ func NewExecuteModuleResponse(serializedResult string) *kurtosis_core_rpc_api_bi
 // ==============================================================================================
 //                                     Get Module Info
 // ==============================================================================================
-func NewGetModuleInfoArgs(moduleId string) *kurtosis_core_rpc_api_bindings.GetModuleInfoArgs {
-	return &kurtosis_core_rpc_api_bindings.GetModuleInfoArgs{
+func NewGetModuleInfoArgs(moduleId string) *kurtosis_engine_rpc_api_bindings.GetModuleInfoArgs {
+	return &kurtosis_engine_rpc_api_bindings.GetModuleInfoArgs{
 		ModuleId: moduleId,
 	}
 }
 
-func NewGetModuleInfoResponse(ipAddr string) *kurtosis_core_rpc_api_bindings.GetModuleInfoResponse {
-	return &kurtosis_core_rpc_api_bindings.GetModuleInfoResponse{
+func NewGetModuleInfoResponse(ipAddr string) *kurtosis_engine_rpc_api_bindings.GetModuleInfoResponse {
+	return &kurtosis_engine_rpc_api_bindings.GetModuleInfoResponse{
 		IpAddr: ipAddr,
 	}
 }
@@ -59,8 +59,8 @@ func NewGetModuleInfoResponse(ipAddr string) *kurtosis_core_rpc_api_bindings.Get
 // ==============================================================================================
 //                                       Register Files Artifacts
 // ==============================================================================================
-func NewRegisterFilesArtifactArgs(filesArtifactUrls map[string]string) *kurtosis_core_rpc_api_bindings.RegisterFilesArtifactsArgs {
-	return &kurtosis_core_rpc_api_bindings.RegisterFilesArtifactsArgs{
+func NewRegisterFilesArtifactArgs(filesArtifactUrls map[string]string) *kurtosis_engine_rpc_api_bindings.RegisterFilesArtifactsArgs {
+	return &kurtosis_engine_rpc_api_bindings.RegisterFilesArtifactsArgs{
 		FilesArtifactUrls: filesArtifactUrls,
 	}
 }
@@ -68,15 +68,15 @@ func NewRegisterFilesArtifactArgs(filesArtifactUrls map[string]string) *kurtosis
 // ==============================================================================================
 //                                     Register Service
 // ==============================================================================================
-func NewRegisterServiceArgs(serviceId string, partitionId string) *kurtosis_core_rpc_api_bindings.RegisterServiceArgs {
-	return &kurtosis_core_rpc_api_bindings.RegisterServiceArgs{
+func NewRegisterServiceArgs(serviceId string, partitionId string) *kurtosis_engine_rpc_api_bindings.RegisterServiceArgs {
+	return &kurtosis_engine_rpc_api_bindings.RegisterServiceArgs{
 		ServiceId:   serviceId,
 		PartitionId: partitionId,
 	}
 }
 
-func NewRegisterServiceResponse(ipAddr string) *kurtosis_core_rpc_api_bindings.RegisterServiceResponse {
-	return &kurtosis_core_rpc_api_bindings.RegisterServiceResponse{IpAddr: ipAddr}
+func NewRegisterServiceResponse(ipAddr string) *kurtosis_engine_rpc_api_bindings.RegisterServiceResponse {
+	return &kurtosis_engine_rpc_api_bindings.RegisterServiceResponse{IpAddr: ipAddr}
 }
 
 // ==============================================================================================
@@ -90,8 +90,8 @@ func NewStartServiceArgs(
 		cmdArgs []string,
 		envVars map[string]string,
 		enclaveDataDirMntDirpath string,
-		filesArtifactMountDirpaths map[string]string) *kurtosis_core_rpc_api_bindings.StartServiceArgs {
-	return &kurtosis_core_rpc_api_bindings.StartServiceArgs{
+		filesArtifactMountDirpaths map[string]string) *kurtosis_engine_rpc_api_bindings.StartServiceArgs {
+	return &kurtosis_engine_rpc_api_bindings.StartServiceArgs{
 		ServiceId:                  serviceId,
 		DockerImage:                image,
 		UsedPorts:                  usedPorts,
@@ -103,14 +103,14 @@ func NewStartServiceArgs(
 	}
 }
 
-func NewStartServiceResponse(usedPortsHostPortBindings map[string]*kurtosis_core_rpc_api_bindings.PortBinding) *kurtosis_core_rpc_api_bindings.StartServiceResponse {
-	return &kurtosis_core_rpc_api_bindings.StartServiceResponse{
+func NewStartServiceResponse(usedPortsHostPortBindings map[string]*kurtosis_engine_rpc_api_bindings.PortBinding) *kurtosis_engine_rpc_api_bindings.StartServiceResponse {
+	return &kurtosis_engine_rpc_api_bindings.StartServiceResponse{
 		UsedPortsHostPortBindings: usedPortsHostPortBindings,
 	}
 }
 
-func NewPortBinding(interfaceIp string, interfacePort string) *kurtosis_core_rpc_api_bindings.PortBinding {
-	return &kurtosis_core_rpc_api_bindings.PortBinding{
+func NewPortBinding(interfaceIp string, interfacePort string) *kurtosis_engine_rpc_api_bindings.PortBinding {
+	return &kurtosis_engine_rpc_api_bindings.PortBinding{
 		InterfaceIp:   interfaceIp,
 		InterfacePort: interfacePort,
 	}
@@ -119,14 +119,14 @@ func NewPortBinding(interfaceIp string, interfacePort string) *kurtosis_core_rpc
 // ==============================================================================================
 //                                       Get Service Info
 // ==============================================================================================
-func NewGetServiceInfoArgs(serviceId string) *kurtosis_core_rpc_api_bindings.GetServiceInfoArgs {
-	return &kurtosis_core_rpc_api_bindings.GetServiceInfoArgs{
+func NewGetServiceInfoArgs(serviceId string) *kurtosis_engine_rpc_api_bindings.GetServiceInfoArgs {
+	return &kurtosis_engine_rpc_api_bindings.GetServiceInfoArgs{
 		ServiceId: serviceId,
 	}
 }
 
-func NewGetServiceInfoResponse(ipAddr string, enclaveDataDirMountDirpath string) *kurtosis_core_rpc_api_bindings.GetServiceInfoResponse {
-	return &kurtosis_core_rpc_api_bindings.GetServiceInfoResponse{
+func NewGetServiceInfoResponse(ipAddr string, enclaveDataDirMountDirpath string) *kurtosis_engine_rpc_api_bindings.GetServiceInfoResponse {
+	return &kurtosis_engine_rpc_api_bindings.GetServiceInfoResponse{
 		IpAddr:                        ipAddr,
 		EnclaveDataDirMountDirpath: enclaveDataDirMountDirpath,
 	}
@@ -135,8 +135,8 @@ func NewGetServiceInfoResponse(ipAddr string, enclaveDataDirMountDirpath string)
 // ==============================================================================================
 //                                        Remove Service
 // ==============================================================================================
-func NewRemoveServiceArgs(serviceId string, containerStopTimeoutSeconds uint64) *kurtosis_core_rpc_api_bindings.RemoveServiceArgs {
-	return &kurtosis_core_rpc_api_bindings.RemoveServiceArgs{
+func NewRemoveServiceArgs(serviceId string, containerStopTimeoutSeconds uint64) *kurtosis_engine_rpc_api_bindings.RemoveServiceArgs {
+	return &kurtosis_engine_rpc_api_bindings.RemoveServiceArgs{
 		ServiceId:                   serviceId,
 		ContainerStopTimeoutSeconds: containerStopTimeoutSeconds,
 	}
@@ -146,30 +146,30 @@ func NewRemoveServiceArgs(serviceId string, containerStopTimeoutSeconds uint64) 
 //                                          Repartition
 // ==============================================================================================
 func NewRepartitionArgs(
-		partitionServices map[string]*kurtosis_core_rpc_api_bindings.PartitionServices,
-		partitionConnections map[string]*kurtosis_core_rpc_api_bindings.PartitionConnections,
-		defaultConnection *kurtosis_core_rpc_api_bindings.PartitionConnectionInfo) *kurtosis_core_rpc_api_bindings.RepartitionArgs {
-	return &kurtosis_core_rpc_api_bindings.RepartitionArgs{
+		partitionServices map[string]*kurtosis_engine_rpc_api_bindings.PartitionServices,
+		partitionConnections map[string]*kurtosis_engine_rpc_api_bindings.PartitionConnections,
+		defaultConnection *kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo) *kurtosis_engine_rpc_api_bindings.RepartitionArgs {
+	return &kurtosis_engine_rpc_api_bindings.RepartitionArgs{
 		PartitionServices:    partitionServices,
 		PartitionConnections: partitionConnections,
 		DefaultConnection:    defaultConnection,
 	}
 }
 
-func NewPartitionServices(serviceIdSet map[string]bool) *kurtosis_core_rpc_api_bindings.PartitionServices {
-	return &kurtosis_core_rpc_api_bindings.PartitionServices{
+func NewPartitionServices(serviceIdSet map[string]bool) *kurtosis_engine_rpc_api_bindings.PartitionServices {
+	return &kurtosis_engine_rpc_api_bindings.PartitionServices{
 		ServiceIdSet: serviceIdSet,
 	}
 }
 
-func NewPartitionConnections(connectionInfo map[string]*kurtosis_core_rpc_api_bindings.PartitionConnectionInfo) *kurtosis_core_rpc_api_bindings.PartitionConnections {
-	return &kurtosis_core_rpc_api_bindings.PartitionConnections{
+func NewPartitionConnections(connectionInfo map[string]*kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo) *kurtosis_engine_rpc_api_bindings.PartitionConnections {
+	return &kurtosis_engine_rpc_api_bindings.PartitionConnections{
 		ConnectionInfo: connectionInfo,
 	}
 }
 
-func NewPartitionConnectionInfo(isBlocked bool) *kurtosis_core_rpc_api_bindings.PartitionConnectionInfo {
-	return &kurtosis_core_rpc_api_bindings.PartitionConnectionInfo{
+func NewPartitionConnectionInfo(isBlocked bool) *kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo {
+	return &kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo{
 		IsBlocked: isBlocked,
 	}
 }
@@ -177,15 +177,15 @@ func NewPartitionConnectionInfo(isBlocked bool) *kurtosis_core_rpc_api_bindings.
 // ==============================================================================================
 //                                          Exec Command
 // ==============================================================================================
-func NewExecCommandArgs(serviceId string, commandArgs []string) *kurtosis_core_rpc_api_bindings.ExecCommandArgs {
-	return &kurtosis_core_rpc_api_bindings.ExecCommandArgs{
+func NewExecCommandArgs(serviceId string, commandArgs []string) *kurtosis_engine_rpc_api_bindings.ExecCommandArgs {
+	return &kurtosis_engine_rpc_api_bindings.ExecCommandArgs{
 		ServiceId:   serviceId,
 		CommandArgs: commandArgs,
 	}
 }
 
-func NewExecCommandResponse(exitCode int32, logOutput string) *kurtosis_core_rpc_api_bindings.ExecCommandResponse {
-	return &kurtosis_core_rpc_api_bindings.ExecCommandResponse{
+func NewExecCommandResponse(exitCode int32, logOutput string) *kurtosis_engine_rpc_api_bindings.ExecCommandResponse {
+	return &kurtosis_engine_rpc_api_bindings.ExecCommandResponse{
 		ExitCode:  exitCode,
 		LogOutput: logOutput,
 	}
@@ -201,8 +201,8 @@ func NewWaitForHttpGetEndpointAvailabilityArgs(
 	initialDelayMilliseconds uint32,
 	retries uint32,
 	retriesDelayMilliseconds uint32,
-	bodyText string) *kurtosis_core_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs {
-	return &kurtosis_core_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs{
+	bodyText string) *kurtosis_engine_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs {
+	return &kurtosis_engine_rpc_api_bindings.WaitForHttpGetEndpointAvailabilityArgs{
 		ServiceId:                serviceId,
 		Port:                     port,
 		Path:                     path,
@@ -224,8 +224,8 @@ func NewWaitForHttpPostEndpointAvailabilityArgs(
 		initialDelayMilliseconds uint32,
 		retries uint32,
 		retriesDelayMilliseconds uint32,
-		bodyText string) *kurtosis_core_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs {
-	return &kurtosis_core_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs{
+		bodyText string) *kurtosis_engine_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs {
+	return &kurtosis_engine_rpc_api_bindings.WaitForHttpPostEndpointAvailabilityArgs{
 		ServiceId:                serviceId,
 		Port:                     port,
 		Path:                     path,
@@ -240,8 +240,8 @@ func NewWaitForHttpPostEndpointAvailabilityArgs(
 // ==============================================================================================
 //                                      Execute Bulk Commands
 // ==============================================================================================
-func NewExecuteBulkCommandsArgs(serializedCommands string) *kurtosis_core_rpc_api_bindings.ExecuteBulkCommandsArgs {
-	return &kurtosis_core_rpc_api_bindings.ExecuteBulkCommandsArgs{
+func NewExecuteBulkCommandsArgs(serializedCommands string) *kurtosis_engine_rpc_api_bindings.ExecuteBulkCommandsArgs {
+	return &kurtosis_engine_rpc_api_bindings.ExecuteBulkCommandsArgs{
 		SerializedCommands: serializedCommands,
 	}
 }

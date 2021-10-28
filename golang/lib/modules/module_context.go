@@ -19,7 +19,7 @@ package modules
 
 import (
 	"context"
-	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
 	"github.com/palantir/stacktrace"
 )
@@ -28,11 +28,11 @@ type ModuleID string
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type ModuleContext struct {
-	client   kurtosis_core_rpc_api_bindings.ApiContainerServiceClient
+	client   kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
 	moduleId ModuleID
 }
 
-func NewModuleContext(client kurtosis_core_rpc_api_bindings.ApiContainerServiceClient, moduleId ModuleID) *ModuleContext {
+func NewModuleContext(client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient, moduleId ModuleID) *ModuleContext {
 	return &ModuleContext{client: client, moduleId: moduleId}
 }
 

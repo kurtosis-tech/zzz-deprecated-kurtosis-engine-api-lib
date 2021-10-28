@@ -19,7 +19,7 @@ package networks
 
 import (
 	"context"
-	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/modules"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/services"
@@ -42,7 +42,7 @@ const (
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type NetworkContext struct {
-	client kurtosis_core_rpc_api_bindings.ApiContainerServiceClient
+	client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
 
 	// The location on the filesystem where this code is running where the enclave data dir exists
 	enclaveDataDirpath string
@@ -52,7 +52,7 @@ type NetworkContext struct {
 Creates a new NetworkContext object with the given parameters.
 */
 func NewNetworkContext(
-		client kurtosis_core_rpc_api_bindings.ApiContainerServiceClient,
+		client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient,
 		enclaveDataDirpath string) *NetworkContext {
 	return &NetworkContext{
 		client:             client,
@@ -117,7 +117,7 @@ func (networkCtx *NetworkContext) RegisterFilesArtifacts(filesArtifactUrls map[s
 func (networkCtx *NetworkContext) AddService(
 		serviceId services.ServiceID,
 		containerConfigSupplier func(ipAddr string, sharedDirectory *services.SharedPath) (*services.ContainerConfig, error),
-	) (*services.ServiceContext, map[string]*kurtosis_core_rpc_api_bindings.PortBinding, error) {
+	) (*services.ServiceContext, map[string]*kurtosis_engine_rpc_api_bindings.PortBinding, error) {
 
 	serviceContext, hostPortBindings, err := networkCtx.AddServiceToPartition(
 		serviceId,
@@ -136,7 +136,7 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 		serviceId services.ServiceID,
 		partitionID PartitionID,
 		containerConfigSupplier func(ipAddr string, sharedDirectory *services.SharedPath) (*services.ContainerConfig, error),
-		) (*services.ServiceContext, map[string]*kurtosis_core_rpc_api_bindings.PortBinding, error) {
+		) (*services.ServiceContext, map[string]*kurtosis_engine_rpc_api_bindings.PortBinding, error) {
 
 	ctx := context.Background()
 
@@ -175,7 +175,7 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 	logrus.Trace("Successfully created files artifact ID str -> mount dirpaths map")
 
 	logrus.Trace("Starting new service with Kurtosis API...")
-	startServiceArgs := &kurtosis_core_rpc_api_bindings.StartServiceArgs{
+	startServiceArgs := &kurtosis_engine_rpc_api_bindings.StartServiceArgs{
 		ServiceId:                  string(serviceId),
 		DockerImage:                containerConfig.GetImage(),
 		UsedPorts:                  containerConfig.GetUsedPortsSet(),
@@ -263,8 +263,8 @@ func (networkCtx *NetworkContext) RemoveService(serviceId services.ServiceID, co
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) RepartitionNetwork(
 	partitionServices map[PartitionID]map[services.ServiceID]bool,
-	partitionConnections map[PartitionID]map[PartitionID]*kurtosis_core_rpc_api_bindings.PartitionConnectionInfo,
-	defaultConnection *kurtosis_core_rpc_api_bindings.PartitionConnectionInfo) error {
+	partitionConnections map[PartitionID]map[PartitionID]*kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo,
+	defaultConnection *kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo) error {
 
 	if partitionServices == nil {
 		return stacktrace.NewError("Partition services map cannot be nil")
@@ -275,10 +275,10 @@ func (networkCtx *NetworkContext) RepartitionNetwork(
 
 	// Cover for lazy/confused users
 	if partitionConnections == nil {
-		partitionConnections = map[PartitionID]map[PartitionID]*kurtosis_core_rpc_api_bindings.PartitionConnectionInfo{}
+		partitionConnections = map[PartitionID]map[PartitionID]*kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo{}
 	}
 
-	reqPartitionServices := map[string]*kurtosis_core_rpc_api_bindings.PartitionServices{}
+	reqPartitionServices := map[string]*kurtosis_engine_rpc_api_bindings.PartitionServices{}
 	for partitionId, serviceIdSet := range partitionServices {
 		serviceIdStrPseudoSet := map[string]bool{}
 		for serviceId := range serviceIdSet {
@@ -289,9 +289,9 @@ func (networkCtx *NetworkContext) RepartitionNetwork(
 		reqPartitionServices[partitionIdStr] = binding_constructors.NewPartitionServices(serviceIdStrPseudoSet)
 	}
 
-	reqPartitionConns := map[string]*kurtosis_core_rpc_api_bindings.PartitionConnections{}
+	reqPartitionConns := map[string]*kurtosis_engine_rpc_api_bindings.PartitionConnections{}
 	for partitionAId, partitionAConnsMap := range partitionConnections {
-		partitionAConnsStrMap := map[string]*kurtosis_core_rpc_api_bindings.PartitionConnectionInfo{}
+		partitionAConnsStrMap := map[string]*kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo{}
 		for partitionBId, connInfo := range partitionAConnsMap {
 			partitionBIdStr := string(partitionBId)
 			partitionAConnsStrMap[partitionBIdStr] = connInfo
