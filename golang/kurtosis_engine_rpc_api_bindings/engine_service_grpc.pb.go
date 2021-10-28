@@ -21,6 +21,9 @@ const _ = grpc.SupportPackageIsVersion7
 type EngineServiceClient interface {
 	// Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
 	GetEngineInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEngineInfoResponse, error)
+	// ==============================================================================================
+	//                                   Enclave Management
+	// ==============================================================================================
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(ctx context.Context, in *CreateEnclaveArgs, opts ...grpc.CallOption) (*CreateEnclaveResponse, error)
 	// Returns information about the existing enclaves
@@ -29,6 +32,47 @@ type EngineServiceClient interface {
 	StopEnclave(ctx context.Context, in *StopEnclaveArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Destroys an enclave, removing all artifacts associated with it
 	DestroyEnclave(ctx context.Context, in *DestroyEnclaveArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ==============================================================================================
+	//                                    Enclave-Internal
+	// ==============================================================================================
+	// Starts the registration of an external container (started by a third-party source, not the API container)
+	StartExternalContainerRegistration(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StartExternalContainerRegistrationResponse, error)
+	// Finishes the registration of an container (started by a third-party source, not the API contianer) that was started previously
+	// NOTE: It's important not to forget to finish this registration, else the external container won't be recognized by the API container!
+	FinishExternalContainerRegistration(ctx context.Context, in *FinishExternalContainerRegistrationArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Starts a module container in the enclave
+	LoadModule(ctx context.Context, in *LoadModuleArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Stop and remove a module from the enclave
+	UnloadModule(ctx context.Context, in *UnloadModuleArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Executes an executable module on the user's behalf
+	ExecuteModule(ctx context.Context, in *ExecuteModuleArgs, opts ...grpc.CallOption) (*ExecuteModuleResponse, error)
+	// Gets information about a loaded module
+	GetModuleInfo(ctx context.Context, in *GetModuleInfoArgs, opts ...grpc.CallOption) (*GetModuleInfoResponse, error)
+	// Tells the API container that the client has files artifacts from the web that it would like the API container to know about
+	// The API container will download these artifacts locally, so they're available when launching services
+	RegisterFilesArtifacts(ctx context.Context, in *RegisterFilesArtifactsArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Registers a service with the API container but doesn't start the container for it
+	RegisterService(ctx context.Context, in *RegisterServiceArgs, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
+	// Starts a previously-registered service by creating a Docker container for it
+	StartService(ctx context.Context, in *StartServiceArgs, opts ...grpc.CallOption) (*StartServiceResponse, error)
+	// Returns relevant information about the service
+	GetServiceInfo(ctx context.Context, in *GetServiceInfoArgs, opts ...grpc.CallOption) (*GetServiceInfoResponse, error)
+	// Instructs the API container to remove the given service
+	RemoveService(ctx context.Context, in *RemoveServiceArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Instructs the API container to repartition the test network
+	Repartition(ctx context.Context, in *RepartitionArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Executes the given command inside a running container
+	ExecCommand(ctx context.Context, in *ExecCommandArgs, opts ...grpc.CallOption) (*ExecCommandResponse, error)
+	// Block until the given HTTP endpoint returns available, calling it through a HTTP Get request
+	WaitForHttpGetEndpointAvailability(ctx context.Context, in *WaitForHttpGetEndpointAvailabilityArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Block until the given HTTP endpoint returns available, calling it through a HTTP Post request
+	WaitForHttpPostEndpointAvailability(ctx context.Context, in *WaitForHttpPostEndpointAvailabilityArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Executes multiple commands at once
+	ExecuteBulkCommands(ctx context.Context, in *ExecuteBulkCommandsArgs, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Returns the IDs of the current services in the test network
+	GetServices(ctx context.Context, in *GetServicesArgs, opts ...grpc.CallOption) (*GetServicesResponse, error)
+	// Returns the IDs of the Kurtosis modules that have been loaded into the enclave
+	GetModules(ctx context.Context, in *GetModulesArgs, opts ...grpc.CallOption) (*GetModulesResponse, error)
 }
 
 type engineServiceClient struct {
@@ -84,12 +128,177 @@ func (c *engineServiceClient) DestroyEnclave(ctx context.Context, in *DestroyEnc
 	return out, nil
 }
 
+func (c *engineServiceClient) StartExternalContainerRegistration(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StartExternalContainerRegistrationResponse, error) {
+	out := new(StartExternalContainerRegistrationResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/StartExternalContainerRegistration", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) FinishExternalContainerRegistration(ctx context.Context, in *FinishExternalContainerRegistrationArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/FinishExternalContainerRegistration", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) LoadModule(ctx context.Context, in *LoadModuleArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/LoadModule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) UnloadModule(ctx context.Context, in *UnloadModuleArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/UnloadModule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) ExecuteModule(ctx context.Context, in *ExecuteModuleArgs, opts ...grpc.CallOption) (*ExecuteModuleResponse, error) {
+	out := new(ExecuteModuleResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/ExecuteModule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) GetModuleInfo(ctx context.Context, in *GetModuleInfoArgs, opts ...grpc.CallOption) (*GetModuleInfoResponse, error) {
+	out := new(GetModuleInfoResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetModuleInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) RegisterFilesArtifacts(ctx context.Context, in *RegisterFilesArtifactsArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/RegisterFilesArtifacts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) RegisterService(ctx context.Context, in *RegisterServiceArgs, opts ...grpc.CallOption) (*RegisterServiceResponse, error) {
+	out := new(RegisterServiceResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/RegisterService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) StartService(ctx context.Context, in *StartServiceArgs, opts ...grpc.CallOption) (*StartServiceResponse, error) {
+	out := new(StartServiceResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/StartService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) GetServiceInfo(ctx context.Context, in *GetServiceInfoArgs, opts ...grpc.CallOption) (*GetServiceInfoResponse, error) {
+	out := new(GetServiceInfoResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetServiceInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) RemoveService(ctx context.Context, in *RemoveServiceArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/RemoveService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) Repartition(ctx context.Context, in *RepartitionArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/Repartition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) ExecCommand(ctx context.Context, in *ExecCommandArgs, opts ...grpc.CallOption) (*ExecCommandResponse, error) {
+	out := new(ExecCommandResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/ExecCommand", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) WaitForHttpGetEndpointAvailability(ctx context.Context, in *WaitForHttpGetEndpointAvailabilityArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/WaitForHttpGetEndpointAvailability", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) WaitForHttpPostEndpointAvailability(ctx context.Context, in *WaitForHttpPostEndpointAvailabilityArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/WaitForHttpPostEndpointAvailability", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) ExecuteBulkCommands(ctx context.Context, in *ExecuteBulkCommandsArgs, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/ExecuteBulkCommands", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) GetServices(ctx context.Context, in *GetServicesArgs, opts ...grpc.CallOption) (*GetServicesResponse, error) {
+	out := new(GetServicesResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetServices", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) GetModules(ctx context.Context, in *GetModulesArgs, opts ...grpc.CallOption) (*GetModulesResponse, error) {
+	out := new(GetModulesResponse)
+	err := c.cc.Invoke(ctx, "/engine_api.EngineService/GetModules", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EngineServiceServer is the server API for EngineService service.
 // All implementations must embed UnimplementedEngineServiceServer
 // for forward compatibility
 type EngineServiceServer interface {
 	// Endpoint for getting information about the engine, which is also what we use to verify that the engine has become available
 	GetEngineInfo(context.Context, *emptypb.Empty) (*GetEngineInfoResponse, error)
+	// ==============================================================================================
+	//                                   Enclave Management
+	// ==============================================================================================
 	// Creates a new Kurtosis Enclave
 	CreateEnclave(context.Context, *CreateEnclaveArgs) (*CreateEnclaveResponse, error)
 	// Returns information about the existing enclaves
@@ -98,6 +307,47 @@ type EngineServiceServer interface {
 	StopEnclave(context.Context, *StopEnclaveArgs) (*emptypb.Empty, error)
 	// Destroys an enclave, removing all artifacts associated with it
 	DestroyEnclave(context.Context, *DestroyEnclaveArgs) (*emptypb.Empty, error)
+	// ==============================================================================================
+	//                                    Enclave-Internal
+	// ==============================================================================================
+	// Starts the registration of an external container (started by a third-party source, not the API container)
+	StartExternalContainerRegistration(context.Context, *emptypb.Empty) (*StartExternalContainerRegistrationResponse, error)
+	// Finishes the registration of an container (started by a third-party source, not the API contianer) that was started previously
+	// NOTE: It's important not to forget to finish this registration, else the external container won't be recognized by the API container!
+	FinishExternalContainerRegistration(context.Context, *FinishExternalContainerRegistrationArgs) (*emptypb.Empty, error)
+	// Starts a module container in the enclave
+	LoadModule(context.Context, *LoadModuleArgs) (*emptypb.Empty, error)
+	// Stop and remove a module from the enclave
+	UnloadModule(context.Context, *UnloadModuleArgs) (*emptypb.Empty, error)
+	// Executes an executable module on the user's behalf
+	ExecuteModule(context.Context, *ExecuteModuleArgs) (*ExecuteModuleResponse, error)
+	// Gets information about a loaded module
+	GetModuleInfo(context.Context, *GetModuleInfoArgs) (*GetModuleInfoResponse, error)
+	// Tells the API container that the client has files artifacts from the web that it would like the API container to know about
+	// The API container will download these artifacts locally, so they're available when launching services
+	RegisterFilesArtifacts(context.Context, *RegisterFilesArtifactsArgs) (*emptypb.Empty, error)
+	// Registers a service with the API container but doesn't start the container for it
+	RegisterService(context.Context, *RegisterServiceArgs) (*RegisterServiceResponse, error)
+	// Starts a previously-registered service by creating a Docker container for it
+	StartService(context.Context, *StartServiceArgs) (*StartServiceResponse, error)
+	// Returns relevant information about the service
+	GetServiceInfo(context.Context, *GetServiceInfoArgs) (*GetServiceInfoResponse, error)
+	// Instructs the API container to remove the given service
+	RemoveService(context.Context, *RemoveServiceArgs) (*emptypb.Empty, error)
+	// Instructs the API container to repartition the test network
+	Repartition(context.Context, *RepartitionArgs) (*emptypb.Empty, error)
+	// Executes the given command inside a running container
+	ExecCommand(context.Context, *ExecCommandArgs) (*ExecCommandResponse, error)
+	// Block until the given HTTP endpoint returns available, calling it through a HTTP Get request
+	WaitForHttpGetEndpointAvailability(context.Context, *WaitForHttpGetEndpointAvailabilityArgs) (*emptypb.Empty, error)
+	// Block until the given HTTP endpoint returns available, calling it through a HTTP Post request
+	WaitForHttpPostEndpointAvailability(context.Context, *WaitForHttpPostEndpointAvailabilityArgs) (*emptypb.Empty, error)
+	// Executes multiple commands at once
+	ExecuteBulkCommands(context.Context, *ExecuteBulkCommandsArgs) (*emptypb.Empty, error)
+	// Returns the IDs of the current services in the test network
+	GetServices(context.Context, *GetServicesArgs) (*GetServicesResponse, error)
+	// Returns the IDs of the Kurtosis modules that have been loaded into the enclave
+	GetModules(context.Context, *GetModulesArgs) (*GetModulesResponse, error)
 	mustEmbedUnimplementedEngineServiceServer()
 }
 
@@ -119,6 +369,60 @@ func (UnimplementedEngineServiceServer) StopEnclave(context.Context, *StopEnclav
 }
 func (UnimplementedEngineServiceServer) DestroyEnclave(context.Context, *DestroyEnclaveArgs) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DestroyEnclave not implemented")
+}
+func (UnimplementedEngineServiceServer) StartExternalContainerRegistration(context.Context, *emptypb.Empty) (*StartExternalContainerRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartExternalContainerRegistration not implemented")
+}
+func (UnimplementedEngineServiceServer) FinishExternalContainerRegistration(context.Context, *FinishExternalContainerRegistrationArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishExternalContainerRegistration not implemented")
+}
+func (UnimplementedEngineServiceServer) LoadModule(context.Context, *LoadModuleArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoadModule not implemented")
+}
+func (UnimplementedEngineServiceServer) UnloadModule(context.Context, *UnloadModuleArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnloadModule not implemented")
+}
+func (UnimplementedEngineServiceServer) ExecuteModule(context.Context, *ExecuteModuleArgs) (*ExecuteModuleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteModule not implemented")
+}
+func (UnimplementedEngineServiceServer) GetModuleInfo(context.Context, *GetModuleInfoArgs) (*GetModuleInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetModuleInfo not implemented")
+}
+func (UnimplementedEngineServiceServer) RegisterFilesArtifacts(context.Context, *RegisterFilesArtifactsArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterFilesArtifacts not implemented")
+}
+func (UnimplementedEngineServiceServer) RegisterService(context.Context, *RegisterServiceArgs) (*RegisterServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterService not implemented")
+}
+func (UnimplementedEngineServiceServer) StartService(context.Context, *StartServiceArgs) (*StartServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartService not implemented")
+}
+func (UnimplementedEngineServiceServer) GetServiceInfo(context.Context, *GetServiceInfoArgs) (*GetServiceInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServiceInfo not implemented")
+}
+func (UnimplementedEngineServiceServer) RemoveService(context.Context, *RemoveServiceArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveService not implemented")
+}
+func (UnimplementedEngineServiceServer) Repartition(context.Context, *RepartitionArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Repartition not implemented")
+}
+func (UnimplementedEngineServiceServer) ExecCommand(context.Context, *ExecCommandArgs) (*ExecCommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecCommand not implemented")
+}
+func (UnimplementedEngineServiceServer) WaitForHttpGetEndpointAvailability(context.Context, *WaitForHttpGetEndpointAvailabilityArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WaitForHttpGetEndpointAvailability not implemented")
+}
+func (UnimplementedEngineServiceServer) WaitForHttpPostEndpointAvailability(context.Context, *WaitForHttpPostEndpointAvailabilityArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WaitForHttpPostEndpointAvailability not implemented")
+}
+func (UnimplementedEngineServiceServer) ExecuteBulkCommands(context.Context, *ExecuteBulkCommandsArgs) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteBulkCommands not implemented")
+}
+func (UnimplementedEngineServiceServer) GetServices(context.Context, *GetServicesArgs) (*GetServicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServices not implemented")
+}
+func (UnimplementedEngineServiceServer) GetModules(context.Context, *GetModulesArgs) (*GetModulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetModules not implemented")
 }
 func (UnimplementedEngineServiceServer) mustEmbedUnimplementedEngineServiceServer() {}
 
@@ -223,6 +527,330 @@ func _EngineService_DestroyEnclave_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EngineService_StartExternalContainerRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).StartExternalContainerRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/StartExternalContainerRegistration",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).StartExternalContainerRegistration(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_FinishExternalContainerRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishExternalContainerRegistrationArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).FinishExternalContainerRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/FinishExternalContainerRegistration",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).FinishExternalContainerRegistration(ctx, req.(*FinishExternalContainerRegistrationArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_LoadModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoadModuleArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).LoadModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/LoadModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).LoadModule(ctx, req.(*LoadModuleArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_UnloadModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnloadModuleArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).UnloadModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/UnloadModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).UnloadModule(ctx, req.(*UnloadModuleArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_ExecuteModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteModuleArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).ExecuteModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/ExecuteModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).ExecuteModule(ctx, req.(*ExecuteModuleArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_GetModuleInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetModuleInfoArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetModuleInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetModuleInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetModuleInfo(ctx, req.(*GetModuleInfoArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_RegisterFilesArtifacts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterFilesArtifactsArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).RegisterFilesArtifacts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/RegisterFilesArtifacts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).RegisterFilesArtifacts(ctx, req.(*RegisterFilesArtifactsArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_RegisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterServiceArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).RegisterService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/RegisterService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).RegisterService(ctx, req.(*RegisterServiceArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_StartService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartServiceArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).StartService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/StartService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).StartService(ctx, req.(*StartServiceArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_GetServiceInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServiceInfoArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetServiceInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetServiceInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetServiceInfo(ctx, req.(*GetServiceInfoArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_RemoveService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveServiceArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).RemoveService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/RemoveService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).RemoveService(ctx, req.(*RemoveServiceArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_Repartition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RepartitionArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).Repartition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/Repartition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).Repartition(ctx, req.(*RepartitionArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_ExecCommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecCommandArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).ExecCommand(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/ExecCommand",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).ExecCommand(ctx, req.(*ExecCommandArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_WaitForHttpGetEndpointAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WaitForHttpGetEndpointAvailabilityArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).WaitForHttpGetEndpointAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/WaitForHttpGetEndpointAvailability",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).WaitForHttpGetEndpointAvailability(ctx, req.(*WaitForHttpGetEndpointAvailabilityArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_WaitForHttpPostEndpointAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WaitForHttpPostEndpointAvailabilityArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).WaitForHttpPostEndpointAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/WaitForHttpPostEndpointAvailability",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).WaitForHttpPostEndpointAvailability(ctx, req.(*WaitForHttpPostEndpointAvailabilityArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_ExecuteBulkCommands_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteBulkCommandsArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).ExecuteBulkCommands(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/ExecuteBulkCommands",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).ExecuteBulkCommands(ctx, req.(*ExecuteBulkCommandsArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_GetServices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServicesArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetServices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetServices",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetServices(ctx, req.(*GetServicesArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_GetModules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetModulesArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetModules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/engine_api.EngineService/GetModules",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetModules(ctx, req.(*GetModulesArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EngineService_ServiceDesc is the grpc.ServiceDesc for EngineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -249,6 +877,78 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DestroyEnclave",
 			Handler:    _EngineService_DestroyEnclave_Handler,
+		},
+		{
+			MethodName: "StartExternalContainerRegistration",
+			Handler:    _EngineService_StartExternalContainerRegistration_Handler,
+		},
+		{
+			MethodName: "FinishExternalContainerRegistration",
+			Handler:    _EngineService_FinishExternalContainerRegistration_Handler,
+		},
+		{
+			MethodName: "LoadModule",
+			Handler:    _EngineService_LoadModule_Handler,
+		},
+		{
+			MethodName: "UnloadModule",
+			Handler:    _EngineService_UnloadModule_Handler,
+		},
+		{
+			MethodName: "ExecuteModule",
+			Handler:    _EngineService_ExecuteModule_Handler,
+		},
+		{
+			MethodName: "GetModuleInfo",
+			Handler:    _EngineService_GetModuleInfo_Handler,
+		},
+		{
+			MethodName: "RegisterFilesArtifacts",
+			Handler:    _EngineService_RegisterFilesArtifacts_Handler,
+		},
+		{
+			MethodName: "RegisterService",
+			Handler:    _EngineService_RegisterService_Handler,
+		},
+		{
+			MethodName: "StartService",
+			Handler:    _EngineService_StartService_Handler,
+		},
+		{
+			MethodName: "GetServiceInfo",
+			Handler:    _EngineService_GetServiceInfo_Handler,
+		},
+		{
+			MethodName: "RemoveService",
+			Handler:    _EngineService_RemoveService_Handler,
+		},
+		{
+			MethodName: "Repartition",
+			Handler:    _EngineService_Repartition_Handler,
+		},
+		{
+			MethodName: "ExecCommand",
+			Handler:    _EngineService_ExecCommand_Handler,
+		},
+		{
+			MethodName: "WaitForHttpGetEndpointAvailability",
+			Handler:    _EngineService_WaitForHttpGetEndpointAvailability_Handler,
+		},
+		{
+			MethodName: "WaitForHttpPostEndpointAvailability",
+			Handler:    _EngineService_WaitForHttpPostEndpointAvailability_Handler,
+		},
+		{
+			MethodName: "ExecuteBulkCommands",
+			Handler:    _EngineService_ExecuteBulkCommands_Handler,
+		},
+		{
+			MethodName: "GetServices",
+			Handler:    _EngineService_GetServices_Handler,
+		},
+		{
+			MethodName: "GetModules",
+			Handler:    _EngineService_GetModules_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
