@@ -1,4 +1,6 @@
 # TBD
+
+# 0.8.0
 ### Features
 * All the endpoints from Kurt Client have been ported over here
 * All the high-level API for interacting with the API container (`NetworkContext` and its descendants) has been ported here
