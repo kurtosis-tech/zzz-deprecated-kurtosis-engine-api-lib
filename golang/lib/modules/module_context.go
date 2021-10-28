@@ -26,7 +26,7 @@ import (
 
 type ModuleID string
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 type ModuleContext struct {
 	client   kurtosis_engine_rpc_api_bindings.EngineServiceClient
 	enclaveId string  // Switch to reified type?
@@ -37,7 +37,7 @@ func NewModuleContext(client kurtosis_engine_rpc_api_bindings.EngineServiceClien
 	return &ModuleContext{client: client, enclaveId: enclaveId, moduleId: moduleId}
 }
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 func (moduleCtx *ModuleContext) Execute(serializedParams string) (serializedResult string, resultErr error) {
 	args := binding_constructors.NewExecuteModuleArgs(
 		moduleCtx.enclaveId,

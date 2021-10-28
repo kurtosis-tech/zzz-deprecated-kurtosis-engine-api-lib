@@ -6,7 +6,7 @@ import * as grpc from "grpc";
 
 export type ModuleID = string;
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export class ModuleContext {
     private readonly client: EngineServiceClient;
     private readonly enclaveId: string;
@@ -18,7 +18,7 @@ export class ModuleContext {
         this.moduleId = moduleId;
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async execute(serializedParams: string): Promise<Result<string, Error>> {
         const args: ExecuteModuleArgs = newExecuteModuleArgs(this.enclaveId, this.moduleId, serializedParams);
 

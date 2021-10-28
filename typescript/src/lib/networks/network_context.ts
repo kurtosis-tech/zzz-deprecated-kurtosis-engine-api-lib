@@ -68,7 +68,7 @@ const DEFAULT_PARTITION_ID: PartitionID = "";
 // The path on the user service container where the enclave data dir will be bind-mounted
 const SERVICE_ENCLAVE_DATA_DIR_MOUNTPOINT: string = "/kurtosis-enclave-data";
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export class NetworkContext {
     private readonly client: EngineServiceClient;
 
@@ -86,7 +86,7 @@ export class NetworkContext {
         this.enclaveDataDirpath = enclaveDataDirpath;
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async loadModule(
             moduleId: ModuleID,
             image: string,
@@ -115,7 +115,7 @@ export class NetworkContext {
         return ok(moduleCtx);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async unloadModule(moduleId: ModuleID): Promise<Result<null,Error>> {
         const args: UnloadModuleArgs = newUnloadModuleArgs(this.enclaveId, moduleId);
 
@@ -140,7 +140,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getModuleContext(moduleId: ModuleID): Promise<Result<ModuleContext, Error>> {
         const args: GetModuleInfoArgs = newGetModuleInfoArgs(this.enclaveId, moduleId);
         
@@ -165,7 +165,7 @@ export class NetworkContext {
         return ok(moduleCtx);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async registerFilesArtifacts(filesArtifactUrls: Map<FilesArtifactID, string>): Promise<Result<null,Error>> {
         const filesArtifactIdStrsToUrls: Map<string, string> = new Map();
         for (const [artifactId, url] of filesArtifactUrls.entries()) {
@@ -194,7 +194,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async addService(
             serviceId: ServiceID,
             containerConfigSupplier: (ipAddr: string, sharedDirectory: SharedPath) => Result<ContainerConfig, Error>
@@ -213,7 +213,7 @@ export class NetworkContext {
         return ok(resultAddServiceToPartition.value);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async addServiceToPartition(
             serviceId: ServiceID,
             partitionId: PartitionID,
@@ -312,7 +312,7 @@ export class NetworkContext {
         return ok<[ServiceContext, Map<string, PortBinding>], Error>([serviceContext, resultMap]);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getServiceContext(serviceId: ServiceID): Promise<Result<ServiceContext, Error>> {
         const getServiceInfoArgs: GetServiceInfoArgs = newGetServiceInfoArgs(this.enclaveId, serviceId);
         
@@ -371,7 +371,7 @@ export class NetworkContext {
         return ok(serviceContext);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async removeService(serviceId: ServiceID, containerStopTimeoutSeconds: number): Promise<Result<null, Error>> {
 
         log.debug("Removing service '" + serviceId + "'...");
@@ -399,7 +399,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async repartitionNetwork(
             partitionServices: Map<PartitionID, Set<ServiceID>>,
             partitionConnections: Map<PartitionID, Map<PartitionID, PartitionConnectionInfo>>,
@@ -457,7 +457,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async waitForHttpGetEndpointAvailability(
         serviceId: ServiceID,
         port: number, 
@@ -493,7 +493,7 @@ export class NetworkContext {
     return ok(null);
 }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async waitForHttpPostEndpointAvailability(
             serviceId: ServiceID,
             port: number, 
@@ -531,7 +531,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async executeBulkCommands(bulkCommandsJson: string): Promise<Result<null, Error>> {
 
         const args: ExecuteBulkCommandsArgs = newExecuteBulkCommandsArgs(this.enclaveId, bulkCommandsJson);
@@ -553,7 +553,7 @@ export class NetworkContext {
         return ok(null);
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getServices(): Promise<Result<Set<ServiceID>, Error>> {
         const args: GetServicesArgs = newGetServicesArgs(this.enclaveId);
         
@@ -587,7 +587,7 @@ export class NetworkContext {
         return ok(serviceIDs)
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getModules(): Promise<Result<Set<ModuleID>, Error>> {
         const args: GetModulesArgs = newGetModulesArgs(this.enclaveId)
         

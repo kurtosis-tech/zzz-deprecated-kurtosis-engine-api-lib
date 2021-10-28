@@ -3,5 +3,5 @@
  * All Rights Reserved.
  */
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export interface Network {};

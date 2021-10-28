@@ -6,7 +6,7 @@ import { newExecCommandArgs} from "../constructor_calls";
 import { ok, err, Result } from 'neverthrow';
 import * as grpc from "grpc";
 
-// Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export class ServiceContext {
     
     private readonly client: EngineServiceClient;
@@ -28,22 +28,22 @@ export class ServiceContext {
         this.sharedDirectory = sharedDirectory;
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public getServiceID(): ServiceID { 
         return this.serviceId;
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public getIPAddress(): string {
         return this.ipAddress;
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public getSharedDirectory(): SharedPath {
         return  this.sharedDirectory
     }
 
-    // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async execCommand(command: string[]): Promise<Result<[number, string], Error>> {
         const serviceId: ServiceID = this.serviceId;
         const args: ExecCommandArgs = newExecCommandArgs(this.enclaveId, serviceId, command);
