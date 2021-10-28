@@ -1,4 +1,6 @@
 # TBD
+### Fixes
+* `stacktrace.Propagate` will now panic when it receives a nil cause, rather than silently returning nil
 
 # 0.8.0
 ### Features

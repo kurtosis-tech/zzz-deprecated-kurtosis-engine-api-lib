@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/kr/pretty v0.2.1 // indirect
-	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
+	github.com/kurtosis-tech/stacktrace v0.0.0-20211028211901-1c67a77b5409
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20210913180222-943fd674d43e // indirect
