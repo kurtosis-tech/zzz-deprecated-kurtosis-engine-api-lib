@@ -20,28 +20,31 @@ package services
 import (
 	"context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
-	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/binding_constructors"
 	"github.com/palantir/stacktrace"
 )
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type ServiceContext struct {
-	client			kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
+	client			kurtosis_engine_rpc_api_bindings.EngineServiceClient
+	enclaveId       string
 	serviceId		ServiceID
 	ipAddress		string
 	sharedDirectory	*SharedPath
 }
 
 func NewServiceContext(
-		client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient,
+		client kurtosis_engine_rpc_api_bindings.EngineServiceClient,
+		enclaveId string,
 		serviceId ServiceID,
 		ipAddress string,
 	    sharedDirectory *SharedPath) *ServiceContext {
 	return &ServiceContext{
-		client:				client,
-		serviceId:			serviceId,
-		ipAddress:			ipAddress,
-		sharedDirectory:	sharedDirectory,
+		client:          client,
+		enclaveId:       enclaveId,
+		serviceId:       serviceId,
+		ipAddress:       ipAddress,
+		sharedDirectory: sharedDirectory,
 	}
 }
 
@@ -63,7 +66,11 @@ func (self *ServiceContext) GetSharedDirectory() *SharedPath {
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (self *ServiceContext) ExecCommand(command []string) (int32, string, error) {
 	serviceId := self.serviceId
-	args := binding_constructors.NewExecCommandArgs(string(serviceId), command)
+	args := binding_constructors.NewExecCommandArgs(
+		self.enclaveId,
+		string(serviceId),
+		command,
+	)
 	resp, err := self.client.ExecCommand(context.Background(), args)
 	if err != nil {
 		return 0, "", stacktrace.Propagate(

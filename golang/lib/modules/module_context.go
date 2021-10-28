@@ -20,7 +20,7 @@ package modules
 import (
 	"context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
-	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/binding_constructors"
 	"github.com/palantir/stacktrace"
 )
 
@@ -28,17 +28,22 @@ type ModuleID string
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type ModuleContext struct {
-	client   kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
+	client   kurtosis_engine_rpc_api_bindings.EngineServiceClient
+	enclaveId string  // Switch to reified type?
 	moduleId ModuleID
 }
 
-func NewModuleContext(client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient, moduleId ModuleID) *ModuleContext {
-	return &ModuleContext{client: client, moduleId: moduleId}
+func NewModuleContext(client kurtosis_engine_rpc_api_bindings.EngineServiceClient, enclaveId string, moduleId ModuleID) *ModuleContext {
+	return &ModuleContext{client: client, enclaveId: enclaveId, moduleId: moduleId}
 }
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (moduleCtx *ModuleContext) Execute(serializedParams string) (serializedResult string, resultErr error) {
-	args := binding_constructors.NewExecuteModuleArgs(string(moduleCtx.moduleId), serializedParams)
+	args := binding_constructors.NewExecuteModuleArgs(
+		moduleCtx.enclaveId,
+		string(moduleCtx.moduleId),
+		serializedParams,
+	)
 	resp, err := moduleCtx.client.ExecuteModule(context.Background(), args)
 	if err != nil {
 		return "", stacktrace.Propagate(err, "An error occurred executing module '%v'", moduleCtx.moduleId)

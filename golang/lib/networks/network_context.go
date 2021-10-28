@@ -20,12 +20,11 @@ package networks
 import (
 	"context"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
-	"github.com/kurtosis-tech/kurtosis-client/golang/lib/binding_constructors"
-	"github.com/kurtosis-tech/kurtosis-client/golang/lib/modules"
-	"github.com/kurtosis-tech/kurtosis-client/golang/lib/services"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/binding_constructors"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/modules"
+	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/services"
 	"github.com/palantir/stacktrace"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"path/filepath"
 )
 
@@ -40,9 +39,12 @@ const (
 	serviceEnclaveDataDirMountpoint = "/kurtosis-enclave-data"
 )
 
+// TODO Rename to EnclaveContext
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 type NetworkContext struct {
-	client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient
+	client kurtosis_engine_rpc_api_bindings.EngineServiceClient
+
+	enclaveId string
 
 	// The location on the filesystem where this code is running where the enclave data dir exists
 	enclaveDataDirpath string
@@ -51,13 +53,9 @@ type NetworkContext struct {
 /*
 Creates a new NetworkContext object with the given parameters.
 */
-func NewNetworkContext(
-		client kurtosis_engine_rpc_api_bindings.ApiContainerServiceClient,
-		enclaveDataDirpath string) *NetworkContext {
-	return &NetworkContext{
-		client:             client,
-		enclaveDataDirpath: enclaveDataDirpath,
-	}
+
+func NewNetworkContext(client kurtosis_engine_rpc_api_bindings.EngineServiceClient, enclaveId string, enclaveDataDirpath string) *NetworkContext {
+	return &NetworkContext{client: client, enclaveId: enclaveId, enclaveDataDirpath: enclaveDataDirpath}
 }
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
@@ -65,20 +63,25 @@ func (networkCtx *NetworkContext) LoadModule(
 		moduleId modules.ModuleID,
 		image string,
 		serializedParams string) (*modules.ModuleContext, error) {
-	args := binding_constructors.NewLoadModuleArgs(string(moduleId), image, serializedParams)
+	args := binding_constructors.NewLoadModuleArgs(
+		networkCtx.enclaveId,
+		string(moduleId),
+		image,
+		serializedParams,
+	)
 
 	// We proxy calls to execute modules via the API container, so actually no need to use the response here
 	_, err := networkCtx.client.LoadModule(context.Background(), args)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred loading new module '%v' with image '%v' and serialized params '%v'", moduleId, image, serializedParams)
 	}
-	moduleCtx := modules.NewModuleContext(networkCtx.client, moduleId)
+	moduleCtx := modules.NewModuleContext(networkCtx.client, networkCtx.enclaveId, moduleId)
 	return moduleCtx, nil
 }
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) UnloadModule(moduleId modules.ModuleID) error {
-	args := binding_constructors.NewUnloadModuleArgs(string(moduleId))
+	args := binding_constructors.NewUnloadModuleArgs(networkCtx.enclaveId, string(moduleId))
 
 	_, err := networkCtx.client.UnloadModule(context.Background(), args)
 	if err != nil {
@@ -89,14 +92,14 @@ func (networkCtx *NetworkContext) UnloadModule(moduleId modules.ModuleID) error 
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) GetModuleContext(moduleId modules.ModuleID) (*modules.ModuleContext, error) {
-	args := binding_constructors.NewGetModuleInfoArgs(string(moduleId))
+	args := binding_constructors.NewGetModuleInfoArgs(networkCtx.enclaveId, string(moduleId))
 
 	// NOTE: As of 2021-07-18, we actually don't use any of the info that comes back because the ModuleContext doesn't require it!
 	_, err := networkCtx.client.GetModuleInfo(context.Background(), args)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred getting info for module '%v'", moduleId)
 	}
-	moduleCtx := modules.NewModuleContext(networkCtx.client, moduleId)
+	moduleCtx := modules.NewModuleContext(networkCtx.client, networkCtx.enclaveId, moduleId)
 	return moduleCtx, nil
 }
 
@@ -106,7 +109,7 @@ func (networkCtx *NetworkContext) RegisterFilesArtifacts(filesArtifactUrls map[s
 	for artifactId, url := range filesArtifactUrls {
 		filesArtifactIdStrsToUrls[string(artifactId)] = url
 	}
-	args := binding_constructors.NewRegisterFilesArtifactArgs(filesArtifactIdStrsToUrls)
+	args := binding_constructors.NewRegisterFilesArtifactArgs(networkCtx.enclaveId, filesArtifactIdStrsToUrls)
 	if _, err := networkCtx.client.RegisterFilesArtifacts(context.Background(), args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred registering files artifacts: %+v", filesArtifactUrls)
 	}
@@ -141,7 +144,7 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 	ctx := context.Background()
 
 	logrus.Trace("Registering new service ID with Kurtosis API...")
-	registerServiceArgs := binding_constructors.NewRegisterServiceArgs(string(serviceId), string(partitionID))
+	registerServiceArgs := binding_constructors.NewRegisterServiceArgs(networkCtx.enclaveId, string(serviceId), string(partitionID))
 
 	registerServiceResp, err := networkCtx.client.RegisterService(ctx, registerServiceArgs)
 	if err != nil {
@@ -175,16 +178,17 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 	logrus.Trace("Successfully created files artifact ID str -> mount dirpaths map")
 
 	logrus.Trace("Starting new service with Kurtosis API...")
-	startServiceArgs := &kurtosis_engine_rpc_api_bindings.StartServiceArgs{
-		ServiceId:                  string(serviceId),
-		DockerImage:                containerConfig.GetImage(),
-		UsedPorts:                  containerConfig.GetUsedPortsSet(),
-		EntrypointArgs:             containerConfig.GetEntrypointOverrideArgs(),
-		CmdArgs:                    containerConfig.GetCmdOverrideArgs(),
-		DockerEnvVars:              containerConfig.GetEnvironmentVariableOverrides(),
-		EnclaveDataDirMntDirpath:   serviceEnclaveDataDirMountpoint,
-		FilesArtifactMountDirpaths: artifactIdStrToMountDirpath,
-	}
+	startServiceArgs := binding_constructors.NewStartServiceArgs(
+		networkCtx.enclaveId,
+		string(serviceId),
+		containerConfig.GetImage(),
+		containerConfig.GetUsedPortsSet(),
+		containerConfig.GetEntrypointOverrideArgs(),
+		containerConfig.GetCmdOverrideArgs(),
+		containerConfig.GetEnvironmentVariableOverrides(),
+		serviceEnclaveDataDirMountpoint,
+		artifactIdStrToMountDirpath,
+	)
 	resp, err := networkCtx.client.StartService(ctx, startServiceArgs)
 	if err != nil {
 		return nil, nil, stacktrace.Propagate(err, "An error occurred starting the service with the Kurtosis API")
@@ -193,6 +197,7 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 
 	serviceContext := services.NewServiceContext(
 		networkCtx.client,
+		networkCtx.enclaveId,
 		serviceId,
 		serviceIpAddr,
 		sharedDirectory,
@@ -203,7 +208,7 @@ func (networkCtx *NetworkContext) AddServiceToPartition(
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) GetServiceContext(serviceId services.ServiceID) (*services.ServiceContext, error) {
-	getServiceInfoArgs := binding_constructors.NewGetServiceInfoArgs(string(serviceId))
+	getServiceInfoArgs := binding_constructors.NewGetServiceInfoArgs(networkCtx.enclaveId, string(serviceId))
 	serviceResponse, err := networkCtx.client.GetServiceInfo(context.Background(), getServiceInfoArgs)
 	if err != nil {
 		return nil, stacktrace.Propagate(
@@ -235,6 +240,7 @@ func (networkCtx *NetworkContext) GetServiceContext(serviceId services.ServiceID
 
 	serviceContext := services.NewServiceContext(
 		networkCtx.client,
+		networkCtx.enclaveId,
 		serviceId,
 		serviceResponse.GetIpAddr(),
 		sharedDirectory,
@@ -250,7 +256,7 @@ func (networkCtx *NetworkContext) RemoveService(serviceId services.ServiceID, co
 	// NOTE: This is kinda weird - when we remove a service we can never get it back so having a container
 	//  stop timeout doesn't make much sense. It will make more sense when we can stop/start containers
 	// Independent of adding/removing them from the network
-	args := binding_constructors.NewRemoveServiceArgs(string(serviceId), containerStopTimeoutSeconds)
+	args := binding_constructors.NewRemoveServiceArgs(networkCtx.enclaveId, string(serviceId), containerStopTimeoutSeconds)
 	if _, err := networkCtx.client.RemoveService(context.Background(), args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred removing service '%v' from the network", serviceId)
 	}
@@ -264,7 +270,8 @@ func (networkCtx *NetworkContext) RemoveService(serviceId services.ServiceID, co
 func (networkCtx *NetworkContext) RepartitionNetwork(
 	partitionServices map[PartitionID]map[services.ServiceID]bool,
 	partitionConnections map[PartitionID]map[PartitionID]*kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo,
-	defaultConnection *kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo) error {
+	defaultConnection *kurtosis_engine_rpc_api_bindings.PartitionConnectionInfo,
+) error {
 
 	if partitionServices == nil {
 		return stacktrace.NewError("Partition services map cannot be nil")
@@ -301,7 +308,7 @@ func (networkCtx *NetworkContext) RepartitionNetwork(
 		reqPartitionConns[partitionAIdStr] = partitionAConns
 	}
 
-	repartitionArgs := binding_constructors.NewRepartitionArgs(reqPartitionServices, reqPartitionConns, defaultConnection)
+	repartitionArgs := binding_constructors.NewRepartitionArgs(networkCtx.enclaveId, reqPartitionServices, reqPartitionConns, defaultConnection)
 	if _, err := networkCtx.client.Repartition(context.Background(), repartitionArgs); err != nil {
 		return stacktrace.Propagate(err, "An error occurred repartitioning the test network")
 	}
@@ -312,6 +319,7 @@ func (networkCtx *NetworkContext) RepartitionNetwork(
 func (networkCtx *NetworkContext) WaitForHttpGetEndpointAvailability(serviceId services.ServiceID, port uint32, path string, initialDelayMilliseconds uint32, retries uint32, retriesDelayMilliseconds uint32, bodyText string) error {
 
 	availabilityArgs := binding_constructors.NewWaitForHttpGetEndpointAvailabilityArgs(
+		networkCtx.enclaveId,
 		string(serviceId),
 		port,
 		path,
@@ -339,6 +347,7 @@ func (networkCtx *NetworkContext) WaitForHttpGetEndpointAvailability(serviceId s
 func (networkCtx *NetworkContext) WaitForHttpPostEndpointAvailability(serviceId services.ServiceID, port uint32, path string, requestBody string, initialDelayMilliseconds uint32, retries uint32, retriesDelayMilliseconds uint32, bodyText string) error {
 
 	availabilityArgs := binding_constructors.NewWaitForHttpPostEndpointAvailabilityArgs(
+		networkCtx.enclaveId,
 		string(serviceId),
 		port,
 		path,
@@ -365,7 +374,7 @@ func (networkCtx *NetworkContext) WaitForHttpPostEndpointAvailability(serviceId 
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) ExecuteBulkCommands(bulkCommandsJson string) error {
-	args := binding_constructors.NewExecuteBulkCommandsArgs(bulkCommandsJson)
+	args := binding_constructors.NewExecuteBulkCommandsArgs(networkCtx.enclaveId, bulkCommandsJson)
 	if _, err := networkCtx.client.ExecuteBulkCommands(context.Background(), args); err != nil {
 		return stacktrace.Propagate(err, "An error occurred executing the following bulk commands: %v", bulkCommandsJson)
 	}
@@ -374,7 +383,8 @@ func (networkCtx *NetworkContext) ExecuteBulkCommands(bulkCommandsJson string) e
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) GetServices() (map[services.ServiceID]bool, error){
-	response, err := networkCtx.client.GetServices(context.Background(), &emptypb.Empty{})
+	args := binding_constructors.NewGetServicesArgs(networkCtx.enclaveId)
+	response, err := networkCtx.client.GetServices(context.Background(), args)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred getting the service IDs in the network")
 	}
@@ -393,7 +403,8 @@ func (networkCtx *NetworkContext) GetServices() (map[services.ServiceID]bool, er
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-client/lib-documentation
 func (networkCtx *NetworkContext) GetModules() (map[modules.ModuleID]bool, error){
-	response, err := networkCtx.client.GetModules(context.Background(), &emptypb.Empty{})
+	args := binding_constructors.NewGetModulesArgs(networkCtx.enclaveId)
+	response, err := networkCtx.client.GetModules(context.Background(), args)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred getting the IDs of the modules in the network")
 	}
