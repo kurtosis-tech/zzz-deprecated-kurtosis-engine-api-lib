@@ -17,7 +17,7 @@
 
 package v0_bulk_command_api
 
-import "github.com/palantir/stacktrace"
+import "github.com/kurtosis-tech/stacktrace"
 
 // We provide a visitor interface here so that:
 //  1) all enum cases can be exhaustively handled

@@ -23,7 +23,7 @@ import (
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/binding_constructors"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/modules"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/services"
-	"github.com/palantir/stacktrace"
+	"github.com/kurtosis-tech/stacktrace"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
 )
