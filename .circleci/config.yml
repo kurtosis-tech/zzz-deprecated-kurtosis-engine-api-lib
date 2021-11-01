@@ -68,8 +68,8 @@ workflows:
                         "replacement": "https://docs.kurtosistech.com/kurtosis-core"
                     },
                     {
-                        "pattern": "^../kurtosis-engine-api-lib",
-                        "replacement": "https://docs.kurtosistech.com/kurtosis-engine-api-lib"
+                        "pattern": "^../kurtosis-client",
+                        "replacement": "https://docs.kurtosistech.com/kurtosis-client"
                     },
                     {
                         "pattern": "^../kurtosis-testsuite-api-lib",

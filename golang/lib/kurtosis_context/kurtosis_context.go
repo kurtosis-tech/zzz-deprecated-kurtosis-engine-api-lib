@@ -5,16 +5,24 @@ import (
 	"fmt"
 	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-client/golang/lib/enclaves"
+	"github.com/kurtosis-tech/kurtosis-client/golang/lib/kurtosis_api_version_const"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_consts"
 	"github.com/kurtosis-tech/stacktrace"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
 	localHostIPAddressStr = "0.0.0.0"
+
+	// TODO even the org-and-repo should come from Kurt Core
+	apiContainerImage = "kurtosistech/kurtosis-core_api:" + kurtosis_api_version_const.KurtosisApiVersion
+
+	shouldPublishAllPorts = true
 )
+var apiContainerLogLevel = logrus.InfoLevel
 
 type KurtosisContext struct {
 	client kurtosis_engine_rpc_api_bindings.EngineServiceClient
@@ -47,18 +55,15 @@ func NewKurtosisContextFromLocalEngine() (*KurtosisContext, error) {
 func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	ctx context.Context,
 	enclaveId enclaves.EnclaveID,
-	apiContainerImage string,
-	apiContainerLogLevel string,
 	isPartitioningEnabled bool,
-	shouldPublishPorts bool,
 ) (*enclaves.EnclaveContext, error) {
 
 	createEnclaveArgs := &kurtosis_engine_rpc_api_bindings.CreateEnclaveArgs{
 		EnclaveId: string(enclaveId),
 		ApiContainerImage: apiContainerImage,
-		ApiContainerLogLevel: apiContainerLogLevel,
+		ApiContainerLogLevel: apiContainerLogLevel.String(),
 		IsPartitioningEnabled: isPartitioningEnabled,
-		ShouldPublishAllPorts: shouldPublishPorts,
+		ShouldPublishAllPorts: shouldPublishAllPorts,
 	}
 
 	response, err := kurtosisCtx.client.CreateEnclave(ctx, createEnclaveArgs)

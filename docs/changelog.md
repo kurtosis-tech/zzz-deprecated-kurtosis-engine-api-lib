@@ -1,6 +1,7 @@
 # TBD
 ### Features
 * Added `KurtosisContext.getEnclaveContext` function
+* Added docs for `KurtosisContext`
 
 ### Changes
 * `KurtosisContext.getEnclaves` now simply returns a set of enclave IDs
