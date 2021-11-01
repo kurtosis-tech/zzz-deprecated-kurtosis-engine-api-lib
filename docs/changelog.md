@@ -1,4 +1,6 @@
 # TBD
+
+# 0.10.0
 ### Features
 * Added `KurtosisContext.getEnclaveContext` function
 * Added docs for `KurtosisContext`
