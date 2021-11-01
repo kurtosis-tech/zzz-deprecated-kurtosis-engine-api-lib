@@ -16,6 +16,7 @@ import { ApiContainerServiceClient, EnclaveContext, EnclaveID } from "kurtosis-c
 
 const LOCAL_HOST_IP_ADDRESS_STR: string = "0.0.0.0";
 
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export class KurtosisContext {
     private readonly client: EngineServiceClient;
 
@@ -45,6 +46,7 @@ export class KurtosisContext {
         return ok(kurtosisContext);
     }
 
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async createEnclave(
         enclaveId: string,
         apiContainerImage: string,
@@ -92,6 +94,7 @@ export class KurtosisContext {
         return ok(newEnclaveContextResult.value);
     }
 
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getEnclaveContext(enclaveId: EnclaveID): Promise<Result<EnclaveContext, Error>> {
         const emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
 
@@ -128,6 +131,7 @@ export class KurtosisContext {
         return ok(newEnclaveCtxResult.value);
     }
 
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async getEnclaves(): Promise<Result<Set<EnclaveID>, Error>>{
         const emptyArg: google_protobuf_empty_pb.Empty = new google_protobuf_empty_pb.Empty()
 
@@ -157,6 +161,7 @@ export class KurtosisContext {
         return ok(result);
     }
 
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async stopEnclave(enclaveId: EnclaveID): Promise<Result<null, Error>> {
         const args: StopEnclaveArgs = newStopEnclaveArgs(enclaveId)
 
@@ -177,6 +182,7 @@ export class KurtosisContext {
         return ok(null);
     }
 
+    // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async destroyEnclave(enclaveId: EnclaveID): Promise<Result<null, Error>> {
         const args: DestroyEnclaveArgs = newDestroyEnclaveArgs(enclaveId);
 
