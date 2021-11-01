@@ -1136,7 +1136,8 @@ proto.engine_api.EnclaveInfo.toObject = function(includeInstance, msg) {
     containersStatus: jspb.Message.getFieldWithDefault(msg, 4, 0),
     apiContainerStatus: jspb.Message.getFieldWithDefault(msg, 5, 0),
     apiContainerInfo: (f = msg.getApiContainerInfo()) && proto.engine_api.EnclaveAPIContainerInfo.toObject(includeInstance, f),
-    apiContainerHostMachineInfo: (f = msg.getApiContainerHostMachineInfo()) && proto.engine_api.EnclaveAPIContainerHostMachineInfo.toObject(includeInstance, f)
+    apiContainerHostMachineInfo: (f = msg.getApiContainerHostMachineInfo()) && proto.engine_api.EnclaveAPIContainerHostMachineInfo.toObject(includeInstance, f),
+    enclaveDataDirpathOnHostMachine: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -1202,6 +1203,10 @@ proto.engine_api.EnclaveInfo.deserializeBinaryFromReader = function(msg, reader)
       var value = new proto.engine_api.EnclaveAPIContainerHostMachineInfo;
       reader.readMessage(value,proto.engine_api.EnclaveAPIContainerHostMachineInfo.deserializeBinaryFromReader);
       msg.setApiContainerHostMachineInfo(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEnclaveDataDirpathOnHostMachine(value);
       break;
     default:
       reader.skipField();
@@ -1281,6 +1286,13 @@ proto.engine_api.EnclaveInfo.serializeBinaryToWriter = function(message, writer)
       7,
       f,
       proto.engine_api.EnclaveAPIContainerHostMachineInfo.serializeBinaryToWriter
+    );
+  }
+  f = message.getEnclaveDataDirpathOnHostMachine();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
     );
   }
 };
@@ -1447,6 +1459,24 @@ proto.engine_api.EnclaveInfo.prototype.clearApiContainerHostMachineInfo = functi
  */
 proto.engine_api.EnclaveInfo.prototype.hasApiContainerHostMachineInfo = function() {
   return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * optional string enclave_data_dirpath_on_host_machine = 8;
+ * @return {string}
+ */
+proto.engine_api.EnclaveInfo.prototype.getEnclaveDataDirpathOnHostMachine = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.engine_api.EnclaveInfo} returns this
+ */
+proto.engine_api.EnclaveInfo.prototype.setEnclaveDataDirpathOnHostMachine = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
