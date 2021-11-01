@@ -3,19 +3,28 @@ package kurtosis_context
 import (
 	"context"
 	"fmt"
+	"github.com/kurtosis-tech/kurtosis-client/golang/kurtosis_core_rpc_api_bindings"
+	"github.com/kurtosis-tech/kurtosis-client/golang/lib/enclaves"
+	"github.com/kurtosis-tech/kurtosis-client/golang/lib/kurtosis_api_version_const"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_bindings"
 	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/kurtosis_engine_rpc_api_consts"
-	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/api_container_context"
-	"github.com/kurtosis-tech/kurtosis-engine-api-lib/golang/lib/enclave_context"
 	"github.com/kurtosis-tech/stacktrace"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
 	localHostIPAddressStr = "0.0.0.0"
-)
 
+	// TODO even the org-and-repo should come from Kurt Core
+	apiContainerImage = "kurtosistech/kurtosis-core_api:" + kurtosis_api_version_const.KurtosisApiVersion
+
+	shouldPublishAllPorts = true
+)
+var apiContainerLogLevel = logrus.InfoLevel
+
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 type KurtosisContext struct {
 	client kurtosis_engine_rpc_api_bindings.EngineServiceClient
 }
@@ -44,21 +53,19 @@ func NewKurtosisContextFromLocalEngine() (*KurtosisContext, error) {
 	return kurtosisContext, nil
 }
 
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	ctx context.Context,
-	enclaveId string,
-	apiContainerImage string,
-	apiContainerLogLevel string,
+	enclaveId enclaves.EnclaveID,
 	isPartitioningEnabled bool,
-	shouldPublishPorts bool,
-) (*enclave_context.EnclaveContext, error) {
+) (*enclaves.EnclaveContext, error) {
 
 	createEnclaveArgs := &kurtosis_engine_rpc_api_bindings.CreateEnclaveArgs{
-		EnclaveId: enclaveId,
+		EnclaveId: string(enclaveId),
 		ApiContainerImage: apiContainerImage,
-		ApiContainerLogLevel: apiContainerLogLevel,
+		ApiContainerLogLevel: apiContainerLogLevel.String(),
 		IsPartitioningEnabled: isPartitioningEnabled,
-		ShouldPublishAllPorts: shouldPublishPorts,
+		ShouldPublishAllPorts: shouldPublishAllPorts,
 	}
 
 	response, err := kurtosisCtx.client.CreateEnclave(ctx, createEnclaveArgs)
@@ -74,23 +81,54 @@ func (kurtosisCtx *KurtosisContext) CreateEnclave(
 	return enclaveContext, nil
 }
 
-func (kurtosisCtx *KurtosisContext) GetEnclaves(ctx context.Context) (map[string]*enclave_context.EnclaveContext, error) {
-
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
+func (kurtosisCtx *KurtosisContext) GetEnclaveContext(ctx context.Context, enclaveId enclaves.EnclaveID) (*enclaves.EnclaveContext, error) {
 	response, err := kurtosisCtx.client.GetEnclaves(ctx, &emptypb.Empty{})
 	if err != nil {
-		return nil,
-		stacktrace.Propagate(
+		return nil, stacktrace.Propagate(
 			err,
-			"An error occurred getting enclaves")
+			"An error occurred getting enclaves",
+		)
 	}
 
-	enclavesMap := newEnclaveContextMapFromEnclaveInfoMap(response.EnclaveInfo)
+	allEnclaveInfo := response.EnclaveInfo
+	enclaveInfo, found := allEnclaveInfo[string(enclaveId)]
+	if !found {
 
-	return enclavesMap, nil
+		return nil, stacktrace.Propagate(err, "No enclave with ID '%v' found", enclaveId)
+	}
+
+	enclaveCtx, err := newEnclaveContextFromEnclaveInfo(enclaveInfo)
+	if err != nil {
+		return nil, stacktrace.Propagate(err, "An error occurred creating an enclave context from the returned enclave info")
+	}
+
+	return enclaveCtx, nil
 }
 
-func (kurtosisCtx *KurtosisContext) StopEnclave(ctx context.Context, enclaveId string) error {
-	stopEnclaveArgs := &kurtosis_engine_rpc_api_bindings.StopEnclaveArgs{EnclaveId: enclaveId}
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
+func (kurtosisCtx *KurtosisContext) GetEnclaves(ctx context.Context) (map[enclaves.EnclaveID]bool, error) {
+	response, err := kurtosisCtx.client.GetEnclaves(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, stacktrace.Propagate(
+			err,
+			"An error occurred getting enclaves",
+		)
+	}
+
+	result := map[enclaves.EnclaveID]bool{}
+	for enclaveId := range response.EnclaveInfo {
+		result[enclaves.EnclaveID(enclaveId)] = true
+	}
+
+	return result, nil
+}
+
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
+func (kurtosisCtx *KurtosisContext) StopEnclave(ctx context.Context, enclaveId enclaves.EnclaveID) error {
+	stopEnclaveArgs := &kurtosis_engine_rpc_api_bindings.StopEnclaveArgs{
+		EnclaveId: string(enclaveId),
+	}
 
 	if _, err := kurtosisCtx.client.StopEnclave(ctx, stopEnclaveArgs); err != nil {
 		return stacktrace.Propagate(err, "An error occurred stopping enclave with ID '%v'", enclaveId)
@@ -99,9 +137,10 @@ func (kurtosisCtx *KurtosisContext) StopEnclave(ctx context.Context, enclaveId s
 	return nil
 }
 
-func (kurtosisCtx *KurtosisContext) DestroyEnclave(ctx context.Context, enclaveId string) error {
+// Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
+func (kurtosisCtx *KurtosisContext) DestroyEnclave(ctx context.Context, enclaveId enclaves.EnclaveID) error {
 	destroyEnclaveArgs := &kurtosis_engine_rpc_api_bindings.DestroyEnclaveArgs{
-		EnclaveId: enclaveId,
+		EnclaveId: string(enclaveId),
 	}
 
 	if _, err := kurtosisCtx.client.DestroyEnclave(ctx, destroyEnclaveArgs); err != nil {
@@ -114,28 +153,9 @@ func (kurtosisCtx *KurtosisContext) DestroyEnclave(ctx context.Context, enclaveI
 // ====================================================================================================
 // 									   Private helper methods
 // ====================================================================================================
-func newEnclaveContextMapFromEnclaveInfoMap(
-		enclaveInfoMap map[string]*kurtosis_engine_rpc_api_bindings.EnclaveInfo,
-		) map[string]*enclave_context.EnclaveContext {
-
-	enclaveContextMap := map[string]*enclave_context.EnclaveContext{}
-	for enclaveId, enclaveInfo := range enclaveInfoMap {
-		enclaveContext, err := newEnclaveContextFromEnclaveInfo(enclaveInfo)
-		if err != nil {
-			// TODO This is really nasty - we skip enclaves that we can't create, and the only reason we wouldn't be able to create
-			//  enclaves is because of stopped containers. Basically, we should move the API container into the engine-server, and
-			//  make it impossible for enclaves to be in an invalid state at all
-			continue
-		}
-		enclaveContextMap[enclaveId] = enclaveContext
-	}
-
-	return enclaveContextMap
-}
-
 func newEnclaveContextFromEnclaveInfo(
 	enclaveInfo *kurtosis_engine_rpc_api_bindings.EnclaveInfo,
-) (*enclave_context.EnclaveContext, error) {
+) (*enclaves.EnclaveContext, error) {
 
 	enclaveContainersStatus := enclaveInfo.GetContainersStatus()
 	if enclaveContainersStatus != kurtosis_engine_rpc_api_bindings.EnclaveContainersStatus_EnclaveContainersStatus_RUNNING {
@@ -162,20 +182,23 @@ func newEnclaveContextFromEnclaveInfo(
 		return nil, stacktrace.NewError("API container was listed as running, but no API container host machine info exists")
 	}
 
+	apiContainerHostMachineUrl := fmt.Sprintf(
+		"%v:%v",
+		apiContainerHostMachineInfo.IpOnHostMachine,
+		apiContainerHostMachineInfo.PortOnHostMachine,
+	)
+	// TODO SECURITY: use HTTPS!
+	apiContainerConn, err := grpc.Dial(apiContainerHostMachineUrl, grpc.WithInsecure())
+	if err != nil {
+		return nil, stacktrace.Propagate(err, "An error occurred connecting to the API container on host machine URL '%v'", apiContainerHostMachineUrl)
+	}
+	apiContainerClient := kurtosis_core_rpc_api_bindings.NewApiContainerServiceClient(apiContainerConn)
 
-	apiContainerContext := api_container_context.NewAPIContainerContext(
-		apiContainerInfo.GetContainerId(),
-		apiContainerInfo.GetIpInsideEnclave(),
-		apiContainerInfo.GetPortInsideEnclave(),
-		apiContainerHostMachineInfo.GetIpOnHostMachine(),
-		apiContainerHostMachineInfo.GetPortOnHostMachine(),
+	result := enclaves.NewEnclaveContext(
+		apiContainerClient,
+		enclaves.EnclaveID(enclaveInfo.EnclaveId),
+		enclaveInfo.EnclaveDataDirpathOnHostMachine,
 	)
 
-	enclaveContext := enclave_context.NewEnclaveContext(
-		enclaveInfo.GetEnclaveId(),
-		enclaveInfo.GetNetworkId(),
-		enclaveInfo.GetNetworkCidr(),
-		apiContainerContext,
-	)
-	return enclaveContext, nil
+	return result, nil
 }
