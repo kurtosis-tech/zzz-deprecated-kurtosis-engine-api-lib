@@ -1,4 +1,13 @@
 # TBD
+### Features
+* Added `KurtosisContext.getEnclaveContext` function
+
+### Changes
+* `KurtosisContext.getEnclaves` now simply returns a set of enclave IDs
+
+### Breaking Changes
+* `KurtosisContext` enclave manipulation returns & accepts `EnclaveContext` objects from `kurtosis-client`
+* `KurtosisContext.getEnclaves` returns a set of enclave IDs
 
 # 0.9.0
 ### Removals
