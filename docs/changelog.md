@@ -1,4 +1,9 @@
 # TBD
+### Removals
+* Remove the API container endpoints that were added in 0.8.0, because we're backing out of combining the APIC with the engine server
+
+### Breaking Changes
+* Removed all the API container endpoints that were brought in with version 0.8.0
 
 # 0.8.2
 ### Features
