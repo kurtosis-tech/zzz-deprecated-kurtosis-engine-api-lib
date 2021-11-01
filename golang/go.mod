@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/pretty v0.2.1 // indirect
-	github.com/kurtosis-tech/kurtosis-client/golang v0.0.0-20211101174240-9636c9079e85
+	github.com/kurtosis-tech/kurtosis-client/golang v0.0.0-20211101174907-269137535e12
 	github.com/kurtosis-tech/stacktrace v0.0.0-20211028211901-1c67a77b5409
 	golang.org/x/net v0.0.0-20210913180222-943fd674d43e // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect

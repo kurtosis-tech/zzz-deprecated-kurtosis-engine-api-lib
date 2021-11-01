@@ -6,6 +6,7 @@
 * `KurtosisContext.getEnclaves` now simply returns a set of enclave IDs
 
 ### Breaking Changes
+* `NetworkContext` has been renamed to `EnclaveContext`
 * `KurtosisContext` enclave manipulation returns & accepts `EnclaveContext` objects from `kurtosis-client`
 * `KurtosisContext.getEnclaves` returns a set of enclave IDs
 
