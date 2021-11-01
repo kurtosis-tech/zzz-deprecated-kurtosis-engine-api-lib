@@ -10,6 +10,7 @@
 * `NetworkContext` has been renamed to `EnclaveContext`
 * `KurtosisContext` enclave manipulation returns & accepts `EnclaveContext` objects from `kurtosis-client`
 * `KurtosisContext.getEnclaves` returns a set of enclave IDs
+* The `EnclaveInfo` object has an additional field, `enclaveDataDirpathOnHostMachine`
 
 # 0.9.0
 ### Removals
