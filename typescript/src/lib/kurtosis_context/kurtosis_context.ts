@@ -12,9 +12,16 @@ import {
 } from "../../kurtosis_engine_rpc_api_bindings/engine_service_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as jspb from "google-protobuf";
-import { ApiContainerServiceClient, EnclaveContext, EnclaveID } from "kurtosis-core-api-lib";
+import { ApiContainerServiceClient, EnclaveContext, EnclaveID, KURTOSIS_API_VERSION } from "kurtosis-core-api-lib";
 
 const LOCAL_HOST_IP_ADDRESS_STR: string = "0.0.0.0";
+
+// TODO even the org-and-repo should come from Kurt Core
+const API_CONTAINER_IMAGE: string = "kurtosistech/kurtosis-core_api:" + KURTOSIS_API_VERSION;
+
+const SHOULD_PUBLISH_ALL_PORTS: boolean = true;
+
+const API_CONTAINER_LOG_LEVEL: string = "info";
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
 export class KurtosisContext {
@@ -49,17 +56,16 @@ export class KurtosisContext {
     // Docs available at https://docs.kurtosistech.com/kurtosis-engine-api-lib/lib-documentation
     public async createEnclave(
         enclaveId: string,
-        apiContainerImage: string,
-        apiContainerLogLevel: string,
         isPartitioningEnabled: boolean,
-        shouldPublishPorts: boolean): Promise<Result<EnclaveContext, Error>> {
+    ): Promise<Result<EnclaveContext, Error>> {
 
         const args: CreateEnclaveArgs = newCreateEnclaveArgs(
             enclaveId,
-            apiContainerImage,
-            apiContainerLogLevel,
+            API_CONTAINER_IMAGE,
+            API_CONTAINER_LOG_LEVEL,
             isPartitioningEnabled,
-            shouldPublishPorts)
+            SHOULD_PUBLISH_ALL_PORTS,
+        );
 
         const createEnclavePromise: Promise<Result<CreateEnclaveResponse, Error>> = new Promise((resolve, _unusedReject) => {
             this.client.createEnclave(args, (error: grpc.ServiceError | null, response?: CreateEnclaveResponse) => {
