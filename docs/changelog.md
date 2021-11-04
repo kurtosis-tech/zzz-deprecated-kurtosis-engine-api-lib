@@ -2,6 +2,10 @@
 ### Changes
 * Switch to using Kurt Core API Lib from Kurt Client
 
+### Breaking Changes
+* Switched to using Kurt Core API Lib from Kurt Client
+    * Go users will need to update their import paths from `github.com/kurtosis-tech/kurtosis-client/golang` to `github.com/kurtosis-tech/kurtosis-core-api-lib/api/golang`
+
 # 0.10.0
 ### Features
 * Added `KurtosisContext.getEnclaveContext` function
