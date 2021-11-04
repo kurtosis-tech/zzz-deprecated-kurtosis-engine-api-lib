@@ -1,4 +1,6 @@
 # TBD
+### Changes
+* Switch to using Kurt Core API Lib from Kurt Client
 
 # 0.10.0
 ### Features
