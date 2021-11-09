@@ -227,7 +227,8 @@ proto.engine_api.GetEngineInfoResponse.prototype.toObject = function(opt_include
  */
 proto.engine_api.GetEngineInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    engineApiVersion: jspb.Message.getFieldWithDefault(msg, 1, "")
+    engineApiVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    engineVersion: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -268,6 +269,10 @@ proto.engine_api.GetEngineInfoResponse.deserializeBinaryFromReader = function(ms
       var value = /** @type {string} */ (reader.readString());
       msg.setEngineApiVersion(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEngineVersion(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -304,6 +309,13 @@ proto.engine_api.GetEngineInfoResponse.serializeBinaryToWriter = function(messag
       f
     );
   }
+  f = message.getEngineVersion();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -322,6 +334,24 @@ proto.engine_api.GetEngineInfoResponse.prototype.getEngineApiVersion = function(
  */
 proto.engine_api.GetEngineInfoResponse.prototype.setEngineApiVersion = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string engine_version = 2;
+ * @return {string}
+ */
+proto.engine_api.GetEngineInfoResponse.prototype.getEngineVersion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.engine_api.GetEngineInfoResponse} returns this
+ */
+proto.engine_api.GetEngineInfoResponse.prototype.setEngineVersion = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
