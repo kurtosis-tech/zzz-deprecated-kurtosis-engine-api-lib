@@ -23,9 +23,9 @@ const (
 
 	shouldPublishAllPorts = true
 
-	DefaultKurtosisEngineServerPortNum = uint16(9710)
+	DefaultKurtosisEngineServerPortNum = uint16(9718)
 
-	DefaultKurtosisProxyPortNum = uint16(9711)
+	DefaultKurtosisProxyPortNum = uint16(9719)
 
 	// Blank tells the engine server to use the default
 	defaultApiContainerVersionTag = ""
