@@ -243,7 +243,7 @@ func newEnclaveContextFromEnclaveInfo(
 	apiContainerHostMachineUrl := fmt.Sprintf(
 		"%v:%v",
 		apiContainerHostMachineInfo.IpOnHostMachine,
-		apiContainerHostMachineInfo.PortOnHostMachine,
+		apiContainerHostMachineInfo.GrpcPortOnHostMachine,
 	)
 	// TODO SECURITY: use HTTPS!
 	apiContainerConn, err := grpc.Dial(apiContainerHostMachineUrl, grpc.WithInsecure())
