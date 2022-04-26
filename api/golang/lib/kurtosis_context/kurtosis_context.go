@@ -28,7 +28,7 @@ const (
 	DefaultKurtosisEngineServerGrpcProxyPortNum = uint16(9711)
 
 	// Blank tells the engine server to use the default
-	defaultApiContainerVersionTag = "gmarchetti/docker-pause-unpause"
+	defaultApiContainerVersionTag = "gmarchetti_expose-docker-pause-unpause"
 )
 
 var apiContainerLogLevel = logrus.DebugLevel
