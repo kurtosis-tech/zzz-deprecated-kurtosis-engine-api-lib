@@ -35,7 +35,7 @@ export const DEFAULT_GRPC_PROXY_ENGINE_SERVER_PORT_NUM: number = 9711;
 export const DEFAULT_GRPC_ENGINE_SERVER_PORT_NUM: number = 9710;
 
 // Blank tells the engine server to use the default
-const DEFAULT_API_CONTAINER_VERSION_TAG = "";
+const DEFAULT_API_CONTAINER_VERSION_TAG = "gmarchetti_expose-docker-pause-unpause";
 
 // Docs available at https://docs.kurtosistech.com/kurtosis-engine-server/lib-documentation
 export class KurtosisContext {
